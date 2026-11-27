@@ -1,0 +1,12 @@
+# Nunca versionar claves ni datos de clientes
+.env
+*.secret
+clientes/
+.clasp.json
+.clasprc.json
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.zip
+*.mp4

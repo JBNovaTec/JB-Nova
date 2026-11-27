@@ -1,0 +1,218 @@
+Novi — Informe completo del asistente
+26 nov 2026 · @JB | NOVA
+Resumen
+Novi será un asistente de reglas: responde con botones, palabras clave y datos reales de la planilla, sin ningún modelo de IA funcionando por dentro. La IA se usa solo para construirlo: escribir el código, los textos, los sinónimos y las pruebas.
+Tendrá dos caras con el mismo motor:
+• Novi en la web: atiende a los clientes de la tienda (productos, precios, pedidos, saldo de fiado, pagos, preguntas frecuentes).
+• Novi en el panel: ayuda al dueño detrás del PIN (ventas, caja, inventario, fiados, alertas y acciones con confirmación).
+Se instala como un módulo más del Panel Base, configurable por cliente desde una hoja de la planilla.
+Por qué sin IA dentro
+Sin IA en producción, Novi cuesta $0 por mensaje y nunca inventa un dato: cada respuesta sale de una regla o de la planilla. El precio es aceptar que solo entiende lo que se le enseñó.
+Aspecto
+Novi con reglas (este plan)
+Novi con IA dentro
+Costo por mensaje
+$0
+Se paga por uso de la API
+Exactitud
+Siempre igual a la planilla
+Puede equivocarse o inventar
+Preguntas libres
+Solo las que tiene en su diccionario
+Entiende casi cualquier frase
+Privacidad
+Los datos no salen de Google/Cloudflare
+Los mensajes pasan por un proveedor de IA
+Mantenimiento
+Agregar sinónimos y respuestas
+Ajustar instrucciones y vigilar errores
+Velocidad
+Instantánea
+1 a 5 segundos
+Para compensar el límite: menús con botones en cada paso, muchos sinónimos por intención, búsqueda tolerante a errores de escritura, y un “no entendí” que ofrece opciones y el pase a una persona.
+Cómo funciona por dentro
+Cada mensaje pasa por cinco pasos fijos; si ninguno encaja, Novi muestra el menú en vez de adivinar.
+1.  Limpiar el texto: minúsculas, sin acentos, sin signos, números escritos como cifras (“dos” → 2).
+2.  Detectar la intención: se compara con un diccionario de palabras clave y sinónimos por intención (precio, cuanto cuesta, a como esta → consultar precio). Gana la intención con más coincidencias.
+3.  Sacar los datos de la frase: nombre de producto (búsqueda aproximada contra la hoja Productos, tolera “harina pan”, “harinapan”, “arina”), cantidades, montos, cédula o teléfono.
+4.  Seguir el flujo: algunas intenciones abren una conversación de varios pasos (armar pedido, registrar fiado). Novi recuerda en qué paso va y pide lo que falta.
+5.  Responder con plantilla: textos fijos con espacios que se llenan con datos reales ({producto}, {precio_usd}, {precio_bs}, {stock}), más botones de respuesta rápida.
+Los botones son la vía principal: el cliente casi nunca necesita escribir, y así Novi nunca se “pierde”. Escribir libremente es un atajo, no el camino obligatorio.
+Novi en la web (clientes)
+En la tienda, Novi es una burbuja de chat que vende y responde las 24 horas, y solo puede leer datos públicos o los del cliente que se identifica.
+Función
+Qué hace
+Datos que usa
+Saludo y menú
+Saluda con el nombre del negocio y muestra botones: Productos, Mi pedido, Mi saldo, Pagos, Horario, Hablar con alguien
+Novi_Config
+Consultar producto
+Precio en $ y Bs con la tasa del día y disponibilidad (“hay”, “quedan pocas”, “agotado”). Si no existe, sugiere parecidos
+Productos, Config (tasa)
+Catálogo por categorías
+Lista categorías y productos con botones para agregar
+Productos
+Armar pedido
+Agregar, quitar, cambiar cantidad, ver total en $ y Bs
+Productos, tasa
+Cerrar pedido
+Pide nombre, teléfono, retiro o delivery y dirección; guarda el pedido y abre WhatsApp del dueño con el texto listo
+Pedidos (nueva hoja)
+Estado del pedido
+Con el número de pedido muestra: recibido, en preparación, listo, entregado
+Pedidos
+Saldo de fiado
+El cliente da su cédula o teléfono y un código de verificación; ve lo que debe, las cuotas y la próxima fecha
+Clientes / Fiados
+Formas de pago
+Muestra datos de Pago Móvil, transferencia y divisas
+Novi_Config
+Reportar un pago
+Registra referencia, monto y banco como “pendiente de verificar” y avisa al dueño
+Pagos_Reportados (nueva hoja)
+Delivery
+Zonas, costo por zona y horario de entregas
+Novi_Config
+Horario y ubicación
+Horario de hoy, dirección y enlace a Google Maps
+Novi_Config
+Preguntas frecuentes
+Respuestas que el dueño escribe en la hoja (garantía, cambios, mayoristas…)
+Novi_FAQ
+Fuera de horario
+Avisa que está cerrado, pero igual toma el pedido para el día siguiente
+Novi_Config
+Pase a una persona
+Botón que abre WhatsApp con la conversación resumida
+—
+Novi en el panel (dueño)
+Detrás del PIN, Novi es un atajo para consultar el negocio y hacer tareas rápidas; toda acción que cambia datos pide confirmación y queda registrada.
+Consultas (solo lectura)
+Pregunta o botón
+Respuesta
+Ventas de hoy / ayer / semana / mes
+Total en $ y Bs, cantidad de ventas, ticket promedio, comparación con el período anterior
+Ventas por forma de pago
+Efectivo, Pago Móvil, tarjeta, divisas
+Cierre de caja
+Resumen del día listo para cuadrar
+Lo más vendido
+Top 10 de productos del período
+Stock de un producto
+Existencia actual y última venta
+Productos bajos o agotados
+Lista con lo que está bajo el mínimo
+Lista de compra sugerida
+Productos bajo el mínimo con la cantidad para volver al nivel deseado
+Valor del inventario
+Total a costo y a precio de venta
+¿Quién me debe?
+Clientes con saldo, ordenados por monto
+Cuotas vencidas o que vencen hoy
+Lista con botón para cobrar
+Pedidos y pagos pendientes
+Lo que llegó desde la web y falta atender o verificar
+Acciones (con confirmación)
+• Registrar un fiado o un abono a un cliente.
+• Ajustar el stock de un producto (entrada de mercancía o merma).
+• Cambiar la tasa del día.
+• Cambiar el precio de un producto.
+• Marcar un pedido como listo o entregado y un pago reportado como verificado.
+• Generar el mensaje de cobro y abrirlo en WhatsApp con el texto listo.
+Automático (sin que el dueño pregunte)
+• Resumen del día a una hora fija, por correo y como aviso en el panel.
+• Alertas en el panel: stock bajo, cuota vencida, pedido nuevo, pago por verificar.
+Dictado por voz (opcional): el micrófono del navegador convierte la voz en texto y Novi lo procesa con las mismas reglas. Es un servicio gratuito de Chrome o del teléfono, no IA propia, y necesita internet.
+Ejemplos de conversaciones
+Los ejemplos usan datos inventados, como la demo pública. Entre corchetes van los botones que Novi muestra.
+Cliente en la web, armando un pedido
+Cliente: tienen harina pan? Novi: ¡Sí! Harina PAN 1 kg: $1,20 (1.107,07 Bs). Hay disponibilidad. [Agregar] [Ver más productos] Cliente: [Agregar] → Novi: ¿Cuántas? [1] [2] [3] [Otra cantidad] Cliente: 2 Novi: Listo: 2 × Harina PAN = $2,40. [Seguir comprando] [Ver mi pedido] [Finalizar] Cliente: [Finalizar] → Novi: ¿Retiro en tienda o delivery? [Retiro] [Delivery] Novi: Pedido #0142 recibido. Te abro WhatsApp para confirmarlo con la tienda.
+Cliente sin entender la pregunta
+Cliente: el sábado van a estar los del gas? Novi: No tengo esa respuesta, pero puedo ayudarte con esto: [Productos] [Horario] [Mi saldo] [Hablar con alguien]
+Dueño en el panel
+Dueño: cuanto vendi hoy Novi: Hoy: $251,50 en 38 ventas. Efectivo $120,00 · Pago Móvil $86,50 · Tarjeta $45,00. [Cierre de caja] [Lo más vendido] Dueño: fiado 5 pedro Novi: ¿Registro un fiado de $5,00 (4.612,80 Bs) a Pedro Ramírez? [Confirmar] [Cancelar] Dueño: [Confirmar] → Novi: Hecho. Pedro ahora debe $5,00.
+Lo que Novi no hará sin IA
+Novi no conversa: reconoce frases conocidas y ejecuta tareas fijas. Estas ideas de los videos y propuestas anteriores quedan fuera o cambian de forma:
+Idea anterior
+Qué pasa sin IA
+Entender cualquier pregunta escrita como sea
+Solo entiende frases de su diccionario; lo demás va al menú o a una persona
+Charlar de temas fuera del negocio
+No lo hace; responde con el menú
+Leer la foto de una factura del proveedor
+Fuera. Alternativa: cargar la mercancía con el escáner de códigos
+Entender notas de voz largas y desordenadas
+Solo dictados cortos con formato conocido (“fiado 5 Pedro”)
+Redactar mensajes nuevos cada vez
+Usa plantillas fijas; el dueño puede editarlas
+Recomendar con criterio (“¿qué me conviene comprar?”)
+Solo reglas simples: lo más vendido, lo que está bajo el mínimo
+En los videos, Novi aparece respondiendo como si conversara. Conviene que la publicidad muestre estos mismos flujos con botones, para no prometer más de lo que hará.
+Configuración por cliente dentro del Panel Base
+Novi es el mismo código en todos los clientes; lo que cambia vive en hojas de la planilla de cada uno, así se instala igual que el resto del Panel Base.
+Hoja
+Qué guarda
+Novi_Config
+Nombre del negocio, saludo, horario por día, dirección y mapa, datos de pago, zonas y costo de delivery, WhatsApp del dueño, módulos activos (sí/no)
+Novi_FAQ
+Pregunta, palabras clave y respuesta que escribe el dueño
+Novi_Sinonimos
+Palabras propias del cliente (“pote”, “bulto”, nombres locales de productos)
+Novi_Plantillas
+Textos de respuesta editables
+Pedidos
+Pedidos que llegan desde la web
+Pagos_Reportados
+Pagos que reportan los clientes, pendientes de verificar
+Novi_Log
+Cada mensaje, la intención detectada y si Novi entendió o no
+Cada módulo se enciende o apaga por cliente (pedidos, saldo de fiado, delivery, acciones del panel), igual que hoy los módulos tienda, mayorista, crédito y sabores.
+Regla de trabajo: Novi se desarrolla y prueba en la demo con datos inventados; no se toca nada de Promediven hasta que esté listo y el cliente lo pida.
+Seguridad y privacidad
+Novi de la web solo puede leer lo público y crear pedidos o reportes de pago; todo lo demás exige el PIN del panel.
+• Dos llaves distintas: la web llama a funciones públicas (catálogo, pedido, FAQ). El panel llama a funciones que verifican el PIN en el servidor, no solo en la pantalla.
+• Saldo de fiado protegido: cédula o teléfono más un código que el dueño le da al cliente (o los últimos dígitos de otro dato). Nunca se muestra el saldo solo con el nombre.
+• Nada sensible en la web: costos, ganancias, stock exacto (opcional) y datos de otros clientes nunca salen hacia la tienda.
+• Confirmar antes de cambiar: toda acción del panel muestra un resumen y espera “Confirmar”.
+• Registro de todo: Novi_Log guarda quién hizo qué y cuándo; sirve para auditar y para mejorar el diccionario.
+• Límite de consultas: el Worker de Cloudflare frena a quien envíe demasiados mensajes por minuto (evita abusos y bots).
+• Pagos reportados no son pagos: quedan “pendientes” hasta que el dueño los verifica en su banco.
+Arquitectura técnica
+Novi se apoya en lo que ya usa el Panel Base: el widget corre en el navegador, Cloudflare lo sirve y Apps Script es la única puerta a la planilla.
+El motor de reglas vive en el navegador, así responde al instante; solo va al servidor para leer datos frescos o guardar algo. Ninguna capa llama a una IA.
+Cómo lo construimos con IA
+La IA trabaja solo en nuestra mesa de trabajo: genera código, textos y pruebas que revisamos y copiamos al sistema. En producción no queda nada conectado a una IA.
+Tarea
+Qué le pedimos a la IA
+Qué revisamos nosotros
+Diccionario de intenciones
+Sinónimos y formas de preguntar en español venezolano y neutro (“a cómo está”, “qué vale”, “tienen…”)
+Que no choquen entre intenciones
+Código del widget
+La burbuja de chat en JavaScript, el motor de reglas y la búsqueda aproximada
+Que funcione en celular y en el panel
+Funciones de Apps Script
+buscarProducto, saldoCliente, crearPedido, ventasResumen, registrarFiado, etc.
+Permisos, PIN y que no exponga costos
+Plantillas de respuesta
+Textos cortos y amables por intención
+Tono de la marca de cada cliente
+Pruebas
+Listas de 200 a 500 frases reales con la intención esperada
+Porcentaje de aciertos antes de publicar
+Mejora continua
+Leer Novi_Log y proponer sinónimos nuevos para lo que no entendió
+Aprobar cada cambio
+Manual y videos
+Guía de uso para el dueño y las animaciones de Novi
+Que no prometa más de lo que hace
+Nunca se le pasan a la IA datos reales de clientes: para pruebas se usan los datos inventados de la demo.
+Plan por fases
+Se arranca por el panel en solo lectura, porque es lo de menor riesgo y lo que el dueño usa todos los días; cada fase se prueba en la demo antes de pasar a la siguiente.
+1.  Fase 1 — Panel, consultas: ventas, caja, stock, bajos, lo más vendido, quién debe. Solo lectura.
+2.  Fase 2 — Web, catálogo y pedidos: saludo, menú, consulta de productos, carrito, cierre por WhatsApp, horario, delivery, FAQ.
+3.  Fase 3 — Fiados y acciones: saldo verificado en la web; en el panel, registrar fiado, abono, ajuste de stock, tasa y precios con confirmación.
+4.  Fase 4 — Automático: resumen diario, alertas, reporte de pagos, estado del pedido.
+5.  Fase 5 — Voz: dictado en el panel con comandos cortos.
+Desde la fase 1 se revisa Novi_Log cada semana para agregar las frases que no entendió.
+Pendiente por decidir: cómo recibe el cliente su código para ver el saldo de fiado, y si la web muestra el stock exacto o solo “hay / quedan pocas”.
