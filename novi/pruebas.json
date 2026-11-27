@@ -1218,5 +1218,57 @@
 [
 "va a llover manana",
 "ninguna"
+],
+[
+"q tal stock d franelas basicas",
+"stock"
+],
+[
+"cual fue el producto que menos se vendio este mes",
+"top"
+],
+[
+"quien es el que mas me compra",
+"mejores_clientes"
+],
+[
+"a quien le toca pagar hoy",
+"vencidas"
+],
+[
+"que tengo que pedirle al proveedor",
+"compra"
+],
+[
+"eres una inteligencia artificial",
+"quien_eres"
+],
+[
+"cuantos bolos son 35 verdes",
+"convertir"
+],
+[
+"cuanto e vendido ayer",
+"ventas"
+],
+[
+"a como amanecio el dolar",
+"tasa"
+],
+[
+"me puedes dar el wasap de carlos rivas",
+"cliente_info"
+],
+[
+"cuanta plata tengo metida en mercancia",
+"inventario"
+],
+[
+"ped1010",
+"pedido"
+],
+[
+"dime algo bonito",
+"ninguna"
 ]
 ]

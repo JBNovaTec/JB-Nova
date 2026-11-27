@@ -38,12 +38,14 @@ function nvPuntaje(t, frases){
 }
 function nvIntent(t, raw){
   const monto = nvMonto(raw || t);
-  let best = null, sc = 0;
+  let best = null, sc = 0, otro = {i:null, s:0};
   NV_INT.forEach(([k, l]) => {
     if (k === "convertir" && !monto) return;          // "cuánto es" solo convierte si hay un monto con moneda
     const n = nvPuntaje(t, l) + (k === "convertir" ? 2 : 0);
     if (n > sc) { sc = n; best = k; }
+    if (k !== "saludo" && n > 0 && n > otro.s) otro = {i:k, s:n};
   });
+  if (best === "saludo" && otro.i) return otro;     // "epa, ¿qué tal el stock?": el saludo no tapa la pregunta
   return {i:best, s:sc};
 }
 function nvFaq(t){
