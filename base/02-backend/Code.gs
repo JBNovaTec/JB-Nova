@@ -12,7 +12,8 @@
  * 4) Para cambiar el PIN del panel: editá NUEVO_PIN acá abajo y ejecutá la función "cambiarPin".
  *
  * Cada vez que cambies este código: Implementar > Administrar implementaciones > Editar > Nueva versión.
- * Si la planilla ya existía, ejecutá "setup" una vez después de actualizar: agrega la hoja Novi_Log y los colores nuevos
+ * Si la planilla ya existía, ejecutá "setup" una vez después de actualizar: agrega las hojas de Novi, los colores nuevos
+ * y el disparador diario de la tasa BCV
  * (no borra datos).
  */
 
@@ -30,10 +31,12 @@ const HOJAS = {
   Gastos: ["id", "fecha", "categoria", "descripcion", "monto", "pago"],
   Cierres: ["fecha", "ventas", "gastos", "efectivo_esperado", "efectivo_contado", "diferencia", "notas", "fondo", "cobros_efectivo", "gastos_efectivo"],
   Config: ["clave", "valor"],
-  Novi_Log: ["fecha", "texto", "intencion", "entendio"]
+  Novi_Log: ["fecha", "texto", "intencion", "entendio"],
+  Novi_FAQ: ["pregunta", "claves", "respuesta", "paquete", "activo"],
+  Novi_Sinonimos: ["palabra", "equivale"]
 };
 // Columnas que se guardan como texto (evita que Sheets convierta fechas o teléfonos)
-const TEXTO = ["sabor", "fecha", "fecha_pago", "telefono", "items", "imagenes", "descripcion", "especificaciones", "cliente", "direccion", "notas", "valor", "id_texto", "marca", "email", "nota_url", "codigo", "tipo", "nombre", "pagos", "venc", "credito", "texto", "intencion", "entendio"];
+const TEXTO = ["sabor", "fecha", "fecha_pago", "telefono", "items", "imagenes", "descripcion", "especificaciones", "cliente", "direccion", "notas", "valor", "id_texto", "marca", "email", "nota_url", "codigo", "tipo", "nombre", "pagos", "venc", "credito", "texto", "intencion", "entendio", "pregunta", "claves", "respuesta", "paquete", "palabra", "equivale"];
 
 /* ================= SETUP ================= */
 function setup() {
@@ -67,6 +70,7 @@ function setup() {
   if (leer_("Clientes").length === 0) agregar_("Clientes", {codigo: "MAYOR-DEMO", nombre: "Distribuidora Demo C.A.", telefono: "", activo: "SI"});
   // Dispara los permisos de Drive y correo (se piden una sola vez)
   carpetaNotas_(); MailApp.getRemainingDailyQuota();
+  try { instalarTasaDiaria(); actualizarTasaBcv_(true); } catch (e) { /* si falla, la tasa se sigue cargando a mano */ }
   embellecer_();
   resumen_();
   SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Resumen"));
@@ -310,6 +314,16 @@ const ADMIN = {
     });
     return estado_();
   },
+  tasa_set: function (r) {
+    const v = Math.round(Number(r.tasa) * 100) / 100;
+    if (!(v > 0)) throw new Error("Tasa inválida");
+    guardarConfig_({tasa: String(v)});
+    return estado_();
+  },
+  tasa_bcv: function () {
+    actualizarTasaBcv_(false);
+    return estado_();
+  },
   close_save: function (r) {
     const c = r.cierre;
     if (!/^\d{4}-\d\d-\d\d$/.test(String(c.fecha))) throw new Error("Fecha inválida");
@@ -409,6 +423,7 @@ function estado_() {
     expenses: leer_("Gastos").map(function (g) { return {id: Number(g.id), fecha: g.fecha, categoria: g.categoria, descripcion: g.descripcion, monto: Number(g.monto), pago: g.pago || "Efectivo"}; }),
     clientes: hoja_("Agenda") ? leer_("Agenda").map(clienteObj_) : [],
     codigos: leer_("Clientes").map(function (c) { return {codigo: String(c.codigo), nombre: String(c.nombre)}; }),
+    novi: {faq: hoja_("Novi_FAQ") ? leer_("Novi_FAQ") : [], sin: hoja_("Novi_Sinonimos") ? leer_("Novi_Sinonimos") : []},
     cierres: leer_("Cierres").map(function (c) { return {fecha: c.fecha, ventas: Number(c.ventas), gastos: Number(c.gastos), efectivo_esperado: Number(c.efectivo_esperado), efectivo_contado: Number(c.efectivo_contado), diferencia: Number(c.diferencia), notas: c.notas, fondo: Number(c.fondo) || 0, cobros_efectivo: Number(c.cobros_efectivo) || 0, gastos_efectivo: Number(c.gastos_efectivo) || 0}; })
   };
 }
@@ -532,7 +547,7 @@ function config_() {
   const lista = function (s) { return String(s || "").split(",").map(function (x) { return x.trim(); }).filter(Boolean); };
   return {negocio: c.negocio || "Tienda", intro: c.intro || "", titulo: c.titulo || "", tasa: Number(c.tasa) || 1, whatsapp: String(c.whatsapp || ""), entregas: lista(c.entregas), pagos: lista(c.pagos),
     rif: c.rif || "", correo: c.correo || "", instagram: c.instagram || "", sitio: c.sitio || "", legal: c.legal || "", tiktok: c.tiktok || "", lema: c.lema || "", ciudad: c.ciudad || "", color: c.color || "#0a86b8", logo_url: c.logo_url || "",
-    mod_tienda: c.mod_tienda || "SI", mod_mayorista: c.mod_mayorista || "SI", mod_credito: c.mod_credito || "SI", mod_sabores: c.mod_sabores || "SI", mod_novi: c.mod_novi || "SI", notas_publicas: c.notas_publicas || "SI", min_mayor: Math.max(1, Number(c.min_mayor) || 5)};
+    mod_tienda: c.mod_tienda || "SI", mod_mayorista: c.mod_mayorista || "SI", mod_credito: c.mod_credito || "SI", mod_sabores: c.mod_sabores || "SI", mod_novi: c.mod_novi || "SI", tasa_bcv: Number(c.tasa_bcv) || 0, tasa_bcv_eur: Number(c.tasa_bcv_eur) || 0, tasa_bcv_fecha: String(c.tasa_bcv_fecha || ""), notas_publicas: c.notas_publicas || "SI", min_mayor: Math.max(1, Number(c.min_mayor) || 5)};
 }
 
 /* ================= UTILIDADES ================= */
@@ -591,6 +606,40 @@ function limitePedidos_(r) {
     cache.put(k, String(m + 1), 600);
   }
 }
+// Guarda claves sueltas en la hoja Config sin tocar las demás.
+function guardarConfig_(o) {
+  const filas = leer_("Config");
+  Object.keys(o).forEach(function (k) {
+    const ex = filas.filter(function (x) { return x.clave === k; })[0];
+    if (ex) { ex.valor = o[k]; escribir_("Config", ex); } else agregar_("Config", {clave: k, valor: o[k]});
+  });
+}
+// Tasa BCV del día desde bcv.today (servicio gratuito NO oficial). Solo la guarda como referencia:
+// la tasa que usa el sistema cambia únicamente cuando el dueño lo confirma (Novi le pregunta).
+const BCV_URL = "https://bcv.today/api/v1/rate.json";
+function actualizarTasaBcv_(forzar) {
+  const cache = CacheService.getScriptCache();
+  if (!forzar && cache.get("bcv_ok")) return null;
+  const res = UrlFetchApp.fetch(BCV_URL, {muteHttpExceptions: true, followRedirects: true});
+  if (res.getResponseCode() !== 200) throw new Error("No se pudo consultar la tasa BCV");
+  const j = JSON.parse(res.getContentText()), usd = Number(j.USD), eur = Number(j.EUR) || 0;
+  const f = String(j.effective_date || j.date || "").slice(0, 10);
+  if (!(usd > 0) || !/^\d{4}-\d{2}-\d{2}$/.test(f)) throw new Error("Respuesta de tasa inválida");
+  guardarConfig_({tasa_bcv: String(Math.round(usd * 100) / 100), tasa_bcv_eur: String(Math.round(eur * 100) / 100), tasa_bcv_fecha: f});
+  cache.put("bcv_ok", "1", 1200);
+  return {usd: usd, eur: eur, fecha: f};
+}
+// La ejecuta el disparador diario (8:00 y 17:30). No cambia la tasa del sistema.
+function tareaTasaBcv() {
+  try { conLock_(function () { actualizarTasaBcv_(true); }); } catch (e) { /* se reintenta en la próxima ejecución */ }
+}
+// Crea los disparadores diarios de la tasa (se puede ejecutar varias veces: no duplica).
+function instalarTasaDiaria() {
+  ScriptApp.getProjectTriggers().forEach(function (t) { if (t.getHandlerFunction() === "tareaTasaBcv") ScriptApp.deleteTrigger(t); });
+  ScriptApp.newTrigger("tareaTasaBcv").timeBased().everyDays(1).atHour(8).inTimezone("America/Caracas").create();
+  ScriptApp.newTrigger("tareaTasaBcv").timeBased().everyDays(1).atHour(17).nearMinute(45).inTimezone("America/Caracas").create();
+  return "ok";
+}
 // Registro de Novi: lo que escribió el dueño y si Novi lo entendió (para mejorar el diccionario).
 function noviLog_(r) {
   const sh = hoja_("Novi_Log");
@@ -637,15 +686,17 @@ const ANCHOS = {
   Gastos: {id: 120, fecha: 100, categoria: 150, descripcion: 300, monto: 90},
   Cierres: {fecha: 100, ventas: 90, gastos: 90, efectivo_esperado: 130, efectivo_contado: 130, diferencia: 90, notas: 280},
   Config: {clave: 120, valor: 520},
-  Novi_Log: {fecha: 170, texto: 360, intencion: 130, entendio: 80}
+  Novi_Log: {fecha: 170, texto: 360, intencion: 130, entendio: 80},
+  Novi_FAQ: {pregunta: 200, claves: 320, respuesta: 480, paquete: 110, activo: 70},
+  Novi_Sinonimos: {palabra: 160, equivale: 220}
 };
 const CATEGORIAS_GASTO = ["Mercadería", "Delivery / envíos", "Publicidad", "Local / servicios", "Sueldos", "Otros"];
 
 function embellecer_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const colores = {Productos: "#00a5d6", Pedidos: "#e58e00", Gastos: "#d93a3a", Cierres: "#13a05a", Config: "#5b6575", Clientes: "#00a5d6", Agenda: "#00a5d6", Novi_Log: "#1f6feb"};
-  const usdCols = {Productos: ["costo", "precio", "bcv", "mayor"], Pedidos: ["total", "ganancia"], Clientes: [], Agenda: [], Gastos: ["monto"], Cierres: ["ventas", "gastos", "efectivo_esperado", "efectivo_contado", "diferencia"], Config: [], Novi_Log: []};
-  const recortar = ["imagenes", "descripcion", "especificaciones", "items", "direccion", "notas", "valor", "nota_url"];
+  const colores = {Productos: "#00a5d6", Pedidos: "#e58e00", Gastos: "#d93a3a", Cierres: "#13a05a", Config: "#5b6575", Clientes: "#00a5d6", Agenda: "#00a5d6", Novi_Log: "#1f6feb", Novi_FAQ: "#1f6feb", Novi_Sinonimos: "#1f6feb"};
+  const usdCols = {Productos: ["costo", "precio", "bcv", "mayor"], Pedidos: ["total", "ganancia"], Clientes: [], Agenda: [], Gastos: ["monto"], Cierres: ["ventas", "gastos", "efectivo_esperado", "efectivo_contado", "diferencia"], Config: [], Novi_Log: [], Novi_FAQ: [], Novi_Sinonimos: []};
+  const recortar = ["imagenes", "descripcion", "especificaciones", "items", "direccion", "notas", "valor", "nota_url", "claves", "texto"];
   Object.keys(HOJAS).forEach(function (n) {
     const sh = ss.getSheetByName(n), cols = HOJAS[n], nc = cols.length, filas = sh.getMaxRows();
     sh.setTabColor(colores[n]);

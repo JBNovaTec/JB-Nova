@@ -11,7 +11,7 @@ Tiempo estimado: 10–15 minutos si ya tenés los datos del cliente (probado en 
 ## 1. Backend (Google Sheets + Apps Script)
 1. Crear una planilla nueva de Google Sheets con el nombre del cliente.
 2. Extensiones → Apps Script. Borrar lo que haya y pegar todo `02-backend/Code.gs`. Guardar.
-3. Elegir la función `setup` y tocar **Ejecutar**. Aceptar los permisos (Configuración avanzada → Ir al proyecto → Permitir). Crea las hojas (Productos, Pedidos, Clientes, Agenda, Gastos, Cierres, Config, Novi_Log, Resumen) y 4 productos de ejemplo. Debe terminar con "Se completó la ejecución" y sin errores.
+3. Elegir la función `setup` y tocar **Ejecutar**. Aceptar los permisos (Configuración avanzada → Ir al proyecto → Permitir). Crea las hojas (Productos, Pedidos, Clientes, Agenda, Gastos, Cierres, Config, Novi_Log, Novi_FAQ, Novi_Sinonimos, Resumen), 4 productos de ejemplo y el disparador diario de la tasa BCV (8:00 y 17:45, hora de Venezuela). Debe terminar con "Se completó la ejecución" y sin errores.
 4. (Recomendado) Configuración del proyecto → Propiedades del script → agregar `MASTER_KEY` con la clave maestra de JB NOVA. Así la clave nunca queda escrita en el código.
 5. Implementar → Nueva implementación → tipo **Aplicación web** · Ejecutar como: **Yo** · Quién tiene acceso: **Cualquier persona**. Copiar la URL que termina en `/exec`.
 
@@ -39,12 +39,22 @@ Entrar a `tu-sitio/#panel` con la clave `1234` y, en **Ajustes**:
 
 ## Novi (asistente del panel)
 - Botón azul del robot abajo a la derecha, solo dentro del panel (después del PIN). Se apaga en Ajustes → Módulos activos.
-- Fase 1: solo consulta (ventas, caja, lo más vendido, stock, stock bajo, lista de compra, valor del inventario, quién debe, cuotas vencidas, pedidos pendientes, gastos y ganancia). No cambia ningún dato.
+- Consultas: ventas (por período y por producto), formas de pago, caja, lo más/menos vendido, stock, stock bajo, lista de compra, valor del inventario, quién debe, cuotas vencidas, pedidos pendientes, buscar un pedido (PED-1003 o nota 12), datos de un cliente, mejores clientes, mejor día de la semana, gastos y ganancia.
+- Conectores sin IA: hora y fecha de Venezuela, conversión $ ↔ Bs ↔ € y **tasa BCV**. La tasa se consulta sola (bcv.today, fuente no oficial) y Novi **pregunta** si se actualiza; nunca la cambia sin que el dueño diga que sí.
+- Dictado por voz: botón del micrófono (Chrome/Edge/Android; si el navegador no lo soporta, no aparece).
+- Si pasan 5 minutos sin escribir, la conversación se borra y al abrir arranca una nueva.
 - Funciona con reglas y palabras clave, sin IA: costo $0 por mensaje y responde con las mismas cuentas del panel.
 - Lo que el dueño escribe queda en la hoja **Novi_Log** (texto, intención, si entendió). Revisarla cada semana para agregar sinónimos a lo que no entendió.
 
+### Paquetes de preguntas (uso interno de JB NOVA)
+- Están en `novi/paquetes/` del repositorio: `general` (para todos) y por rubro: `ropa-calzado`, `bodega`, `comida`, `suplementos`.
+- Al instalar: ejecutar `setup`, crear el script **NoviPaquetes** con el contenido de `base/02-backend/NoviPaquetes.gs`, poner en `PAQUETES_ELEGIDOS` los paquetes del cliente (ej. `["general", "bodega"]`), ejecutar `cargarPaquetesNovi` y **borrar el script**.
+- Completar en la hoja **Novi_FAQ** lo que dice `[EDITAR: ...]`. Mientras tenga esa marca, Novi no usa esa respuesta con los clientes. Se pueden agregar preguntas propias del negocio (columna `claves` = formas de preguntarlo, separadas por coma) y desactivar filas con `activo = NO`.
+- **Novi_Sinonimos**: palabras propias del negocio (ej. `gomas` → `zapatos`).
+- Para cambiar el diccionario o los paquetes: editar `novi/`, correr `node herramientas/probar.js` (debe dar 95% o más) y `python3 herramientas/armar.py`, que vuelve a armar la web y `NoviPaquetes.gs`.
+
 ## Actualizar una instalación que ya existe
-1. Pegar el `Code.gs` nuevo, guardar y ejecutar **`setup`** una vez (no borra datos: agrega la hoja Novi_Log y los colores nuevos).
+1. Pegar el `Code.gs` nuevo, guardar y ejecutar **`setup`** una vez (no borra datos: agrega las hojas de Novi, los colores nuevos y el disparador de la tasa). Después cargar los paquetes de Novi como en la sección de arriba.
 2. Implementar → Administrar implementaciones → lápiz → **Nueva versión**.
 3. Reemplazar `index.html` y `mayorista/index.html` conservando su `API_URL`.
 4. Los usuarios del panel tienen que volver a entrar con su PIN una vez.
@@ -53,6 +63,9 @@ Entrar a `tu-sitio/#panel` con la clave `1234` y, en **Ajustes**:
 Con la URL `/exec` (desde el navegador o una herramienta) se puede probar enviando un POST de texto con `{"action":"catalog"}`: debe devolver `ok:true` con los 4 productos. La acción del panel para cargar todo es `load` con el campo `pin`.
 
 ## Historial de correcciones
+### Versión con Novi ampliado
+- Novi: preguntas frecuentes y sinónimos en hojas, paquetes por rubro, tasa BCV con confirmación, conversiones, hora y fecha, pedidos, clientes, mejores clientes, mejor día, dictado por voz y reinicio a los 5 minutos.
+- Backend: acciones `tasa_set` y `tasa_bcv`; hojas Novi_FAQ y Novi_Sinonimos; disparador `tareaTasaBcv`.
 ### Versión con Novi (fase 1)
 - Nuevo: Novi en el panel (consultas) y módulo `mod_novi`.
 - Seguridad: el panel usa una sesión de 6 horas después del PIN. Si alguien prueba PIN falsos, solo se bloquean las entradas nuevas por 10 minutos; quien ya está adentro sigue trabajando. La clave maestra nunca queda bloqueada. Cambiar la clave cierra todas las sesiones.

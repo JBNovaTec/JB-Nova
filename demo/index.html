@@ -139,6 +139,7 @@ table.tb{border-collapse:collapse;width:100%;min-width:680px}
 .subnav{display:flex;gap:8px;align-items:center;margin-left:auto}.subnav .btn{padding:7px 10px;font-size:13px}
 @media (max-width:640px){.hero{grid-template-columns:1fr}.hero img.hl{display:none}.logo img{height:30px}.logo b{font-size:16px}.pr2 b{font-size:19px}}
 .credit,.mark{cursor:pointer}.mark{pointer-events:auto!important}.credit:hover{opacity:.85}select.var{width:100%;margin:6px 0;padding:9px 10px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)}.jbp h3{margin:16px 0 4px;font-family:var(--hd)}.jbp ul{margin:4px 0;padding-left:20px}
+/* NOVI:CSS:INICIO */
 /* ============ NOVI · asistente del panel ============ */
 .nv-fab{position:fixed;right:14px;bottom:calc(70px + env(safe-area-inset-bottom,0px));z-index:60;width:66px;height:66px;border:0;padding:0;background:none;cursor:pointer;filter:drop-shadow(0 6px 14px #1d4ed866);transition:transform .2s}
 .nv-fab:hover{transform:translateY(-2px) scale(1.04)}
@@ -173,6 +174,13 @@ table.tb{border-collapse:collapse;width:100%;min-width:680px}
 .nv-in button{border:0;border-radius:10px;background:#1d4ed8;color:#fff;font-weight:700;padding:0 14px;cursor:pointer}
 @media (max-width:520px){.nv-win{left:8px;right:8px;width:auto;bottom:calc(140px + env(safe-area-inset-bottom,0px));height:calc(100vh - 200px)}.nv-fab{width:58px;height:58px}.nv-tip{right:78px;bottom:calc(90px + env(safe-area-inset-bottom,0px))}}
 @media print{.nv-fab,.nv-win,.nv-tip{display:none!important}}
+.nv-in .nv-mic{background:var(--sf2);color:var(--tx);padding:0 11px;font-size:17px}
+.nv-in .nv-mic.on{background:var(--er);color:#fff;animation:nvPulse 1s infinite}
+@keyframes nvPulse{50%{box-shadow:0 0 0 6px #d93a3a33}}
+.nv-m a.nv-wa{display:inline-block;margin-top:8px;background:#13a05a;color:#fff;border-radius:9px;padding:6px 12px;text-decoration:none;font-weight:700;font-size:13px}
+.nv-m mark{background:#ffd54a;color:#10141c;border-radius:4px;padding:0 3px}
+
+/* NOVI:CSS:FIN */
 </style>
 </head>
 <body>
@@ -803,10 +811,157 @@ setInterval(pulso, 8000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) pulso(); });
 document.addEventListener("visibilitychange", () => { if (!document.hidden) tick(); });
 
-/* ============ NOVI · asistente del panel (Fase 1: consultas, solo lectura) ============
-   Sin IA: limpia el texto, detecta la intención por palabras clave, saca el período o el producto
-   y responde con los mismos datos y fórmulas que usa el panel. Lo que no entiende va al menú. */
-const NOVI_SVG = (w) => '<svg viewBox="0 0 120 120" ' + (w ? 'width="' + w + '" height="' + w + '"' : '') + ' aria-hidden="true"><defs><linearGradient id="nvH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f8ff7"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient></defs>' +
+/* NOVI:JS:INICIO */
+const NOVI_DEMO = {"faq": [{"pregunta": "Horario", "claves": "horario, a que hora abren, a que hora cierran, hora de apertura, estan abiertos, abren hoy, atienden hoy, hasta que hora, a que hora atienden", "respuesta": "Atendemos de lunes a sábado de 8:00 am a 6:00 pm.", "paquete": "general", "activo": "SI"}, {"pregunta": "Domingos y feriados", "claves": "domingo, domingos, feriado, feriados, dias festivos, abren el domingo, trabajan el domingo", "respuesta": "Los domingos y feriados no abrimos, pero puedes dejar tu pedido y te lo despachamos el siguiente día hábil.", "paquete": "general", "activo": "SI"}, {"pregunta": "Ubicación", "claves": "donde estan, direccion, ubicacion, donde queda, como llego, tienen local, tienda fisica, donde los consigo, punto de referencia", "respuesta": "Estamos en {ciudad}. dirección exacta y punto de referencia.", "paquete": "general", "activo": "SI"}, {"pregunta": "Formas de pago", "claves": "formas de pago, como pago, metodos de pago, que aceptan, puedo pagar con, como se paga, medios de pago", "respuesta": "Aceptamos: {pagos}. Los pagos por Pago Móvil y Transferencia se cobran en bolívares a la tasa BCV del día.", "paquete": "general", "activo": "SI"}, {"pregunta": "Datos de Pago Móvil", "claves": "datos de pago movil, pago movil, a donde transfiero, datos bancarios, numero de cuenta, cuenta bancaria, a que banco", "respuesta": "Pago Móvil: Banco ____, teléfono ____, C.I./RIF ____. Después envíanos el capture por WhatsApp al +{whatsapp} con tu número de pedido.", "paquete": "general", "activo": "SI"}, {"pregunta": "Zelle", "claves": "zelle, correo zelle, pagar por zelle, aceptan zelle, tienen zelle", "respuesta": "Zelle a nombre de ____, correo ____. Envíanos el capture al +{whatsapp}.", "paquete": "general", "activo": "SI"}, {"pregunta": "Dólares en efectivo", "claves": "efectivo, dolar en efectivo, aceptan dolar, billetes, cash", "respuesta": "Sí, aceptamos dólares en efectivo. El vuelto lo damos en dólares si hay sencillo, o en bolívares.", "paquete": "general", "activo": "SI"}, {"pregunta": "Tasa que usan", "claves": "a que tasa, tasa que usan, que tasa, precio en bs, cobran en bs, tasa del dia, tasa bcv", "respuesta": "Usamos la tasa oficial del BCV del día. Hoy: {tasa} Bs por dólar.", "paquete": "general", "activo": "SI"}, {"pregunta": "Tarjeta / punto de venta", "claves": "tarjeta, punto de venta, debito, pagar con tarjeta", "respuesta": "En la tienda aceptamos tarjeta de débito por punto de venta.", "paquete": "general", "activo": "SI"}, {"pregunta": "Binance / USDT", "claves": "binance, usdt, cripto, criptomonedas", "respuesta": "Sí, aceptamos USDT por Binance Pay. Pídenos los datos por WhatsApp.", "paquete": "general", "activo": "SI"}, {"pregunta": "Delivery", "claves": "delivery, hacen delivery, a domicilio, llevan, envian a mi casa, despacho", "respuesta": "Sí. Formas de entrega: {entregas}. zonas y costo del delivery.", "paquete": "general", "activo": "SI"}, {"pregunta": "Envíos nacionales", "claves": "envios nacionales, envian a otra ciudad, mrw, zoom, tealca, encomienda, envio nacional, envian al interior", "respuesta": "Hacemos envíos a todo el país por MRW, Zoom o Tealca. El envío se paga al recibir (cobro en destino).", "paquete": "general", "activo": "SI"}, {"pregunta": "Tiempo de entrega", "claves": "cuanto tarda, cuando llega, tiempo de entrega, demora, cuanto se tarda, para cuando", "respuesta": "El delivery llega el mismo día si pides antes de las 3:00 pm. Los envíos nacionales tardan de 2 a 4 días hábiles.", "paquete": "general", "activo": "SI"}, {"pregunta": "Retiro en tienda", "claves": "retirar, buscar en tienda, pick up, paso buscando, lo busco, retiro", "respuesta": "Puedes retirar tu pedido en nuestra tienda en {ciudad}. Te avisamos por WhatsApp cuando esté listo.", "paquete": "general", "activo": "SI"}, {"pregunta": "Cómo comprar", "claves": "como compro, como hago un pedido, como pido, como comprar, como funciona, como hago la compra", "respuesta": "Agrega los productos al carrito en esta página, elige la forma de pago y de entrega, y envía el pedido. Te confirmamos por WhatsApp.", "paquete": "general", "activo": "SI"}, {"pregunta": "Estado de mi pedido", "claves": "mi pedido, estado de mi pedido, donde esta mi pedido, ya enviaron, ya salio, rastrear", "respuesta": "Escríbenos por WhatsApp al +{whatsapp} con tu número de pedido y te decimos cómo va.", "paquete": "general", "activo": "SI"}, {"pregunta": "Ya pagué", "claves": "ya pague, ya transferi, envie el pago, comprobante, capture, ya hice el pago, referencia", "respuesta": "¡Gracias! Envía el capture del pago por WhatsApp al +{whatsapp} con tu número de pedido para verificarlo.", "paquete": "general", "activo": "SI"}, {"pregunta": "Factura o nota", "claves": "factura, facturan, nota de entrega, recibo, fiscal, comprobante de compra", "respuesta": "Con cada compra te enviamos una nota de entrega. Si necesitas factura fiscal, pídela al hacer tu pedido.", "paquete": "general", "activo": "SI"}, {"pregunta": "Garantía", "claves": "garantia, tiene garantia, tienen garantia, si sale malo, defecto, defectuoso", "respuesta": "Si el producto llega con un defecto de fábrica, lo cambiamos dentro de los primeros 7 días con su nota de entrega.", "paquete": "general", "activo": "SI"}, {"pregunta": "Cambios y devoluciones", "claves": "cambio, cambios, devolucion, devoluciones, puedo cambiar, reembolso, devolver", "respuesta": "Aceptamos cambios dentro de los 7 días siguientes a la compra, con el producto sin usar y su nota de entrega. No hacemos reembolsos en efectivo.", "paquete": "general", "activo": "SI"}, {"pregunta": "Precios", "claves": "precio, precios, lista de precios, catalogo, cuanto cuesta, cuanto vale", "respuesta": "Los precios están en esta página, en dólares y en bolívares a la tasa del día. Si no encuentras algo, escríbenos al +{whatsapp}.", "paquete": "general", "activo": "SI"}, {"pregunta": "Disponibilidad", "claves": "hay disponible, tienen, les queda, hay stock, disponible, lo tienen", "respuesta": "En la página ves si cada producto está Disponible o Agotado. Si está agotado, escríbenos y te avisamos cuando llegue.", "paquete": "general", "activo": "SI"}, {"pregunta": "Apartar", "claves": "apartar, reservar, separar, me lo guardan, me lo apartan", "respuesta": "Apartamos productos por 24 horas con un abono del 50%.", "paquete": "general", "activo": "SI"}, {"pregunta": "Encargos", "claves": "encargo, pedido especial, pueden traer, pueden conseguir, no lo tienen, lo traen", "respuesta": "Si no ves lo que buscas, escríbenos al +{whatsapp}: a veces podemos traerlo por encargo.", "paquete": "general", "activo": "SI"}, {"pregunta": "Al mayor", "claves": "al mayor, mayorista, precio al mayor, por mayor, distribuidor, revender, para revender", "respuesta": "Tenemos precios al mayor desde {min_mayor} unidades, solo en efectivo. Escríbenos al +{whatsapp} y te damos acceso al catálogo mayorista.", "paquete": "general", "activo": "SI"}, {"pregunta": "Crédito o cuotas", "claves": "credito, cuotas, fiado, pagar en partes, cashea, financiamiento, a credito", "respuesta": "Ofrecemos compras en cuotas a clientes aprobados. Escríbenos para más información.", "paquete": "general", "activo": "SI"}, {"pregunta": "Compra mínima", "claves": "compra minima, monto minimo, minimo de compra, hay minimo", "respuesta": "En detal no hay compra mínima. Al mayor, el mínimo es de {min_mayor} unidades.", "paquete": "general", "activo": "SI"}, {"pregunta": "Ofertas", "claves": "descuento, descuentos, oferta, ofertas, promocion, promociones, promo, rebaja", "respuesta": "Esta semana tenemos ____. Síguenos en Instagram @{instagram} para enterarte de las ofertas.", "paquete": "general", "activo": "SI"}, {"pregunta": "Redes sociales", "claves": "instagram, redes, redes sociales, tiktok, facebook, ig", "respuesta": "Síguenos en Instagram @{instagram}.", "paquete": "general", "activo": "SI"}, {"pregunta": "Hablar con una persona", "claves": "hablar con alguien, asesor, atencion al cliente, una persona, un humano, contacto, whatsapp, telefono, numero", "respuesta": "Escríbenos por WhatsApp al +{whatsapp} y te atiende una persona.", "paquete": "general", "activo": "SI"}, {"pregunta": "¿Es confiable?", "claves": "es seguro, confiable, estafa, son reales, es real, como se que es real, son serios", "respuesta": "Somos {legal} (RIF {rif}). Puedes ver nuestras redes en @{instagram} y escribirnos al +{whatsapp} antes de pagar.", "paquete": "general", "activo": "SI"}, {"pregunta": "RIF y razón social", "claves": "rif, razon social, nombre de la empresa", "respuesta": "{legal} · RIF {rif}.", "paquete": "general", "activo": "SI"}, {"pregunta": "Correo", "claves": "correo, email, mail, correo electronico", "respuesta": "Nuestro correo es {correo}.", "paquete": "general", "activo": "SI"}, {"pregunta": "Vuelto", "claves": "vuelto, sencillo, dan vuelto", "respuesta": "Damos vuelto en dólares cuando hay sencillo; si no, en bolívares por Pago Móvil.", "paquete": "general", "activo": "SI"}, {"pregunta": "Proveedores", "claves": "proveedor, proveedores, vender a ustedes, ofrecer productos, alianza", "respuesta": "Para propuestas de proveedores o alianzas, escríbenos al +{whatsapp} o al correo {correo}.", "paquete": "general", "activo": "SI"}, {"pregunta": "Empleo", "claves": "empleo, trabajo, vacante, vacantes, trabajar con ustedes", "respuesta": "Por ahora no tenemos vacantes. Puedes dejarnos tus datos por WhatsApp al +{whatsapp}.", "paquete": "general", "activo": "SI"}, {"pregunta": "Regalos", "claves": "regalo, envolver, para regalo, tarjeta de regalo, gift card", "respuesta": "Sí, envolvemos para regalo sin costo adicional. Avísanos al hacer tu pedido.", "paquete": "general", "activo": "SI"}, {"pregunta": "Guía de tallas", "claves": "talla, tallas, guia de tallas, que talla, cual es mi talla, como se mi talla, tabla de tallas, medidas", "respuesta": "Manejamos tallas S, M, L y XL. Si nos dices tu estatura y peso por WhatsApp al +{whatsapp}, te recomendamos la talla.", "paquete": "ropa-calzado", "activo": "SI"}, {"pregunta": "Tallas grandes", "claves": "tallas grandes, talla grande, plus size, xxl, 2xl, 3xl, talla extra", "respuesta": "Tenemos algunos modelos hasta 2XL. Pregúntanos por el que te gustó.", "paquete": "ropa-calzado", "activo": "SI"}, {"pregunta": "Talla de calzado", "claves": "talla de zapato, numero de zapato, que numero, talla de calzado, numero de calzado, calzo", "respuesta": "El calzado viene en tallas venezolanas del 35 al 44. Cada producto indica las tallas disponibles.", "paquete": "ropa-calzado", "activo": "SI"}, {"pregunta": "¿Talla exacta o grande?", "claves": "horma, viene grande, viene pequeno, talla exacta, talla normal, como horma, pido una mas", "respuesta": "La mayoría de nuestros modelos son de talla exacta. Si alguno horma distinto, lo indicamos en la descripción.", "paquete": "ropa-calzado", "activo": "SI"}, {"pregunta": "Material y tela", "claves": "material, tela, algodon, de que es, licra, poliester, cuero, sintetico", "respuesta": "El material de cada prenda está en su descripción. Si tienes dudas, escríbenos y te mandamos fotos de la etiqueta.", "paquete": "ropa-calzado", "activo": "SI"}, {"pregunta": "Colores", "claves": "colores, que colores, otro color, en negro, en blanco, viene en", "respuesta": "Los colores disponibles aparecen en cada producto. Si buscas uno que no ves, escríbenos al +{whatsapp}.", "paquete": "ropa-calzado", "activo": "SI"}, {"pregunta": "Cuidado y lavado", "claves": "como lavar, lavado, se encoge, destiñe, cuidado de la prenda, secadora, planchar", "respuesta": "Recomendamos lavar a mano o en ciclo delicado con agua fría, sin secadora, para que la prenda dure más.", "paquete": "ropa-calzado", "activo": "SI"}, {"pregunta": "Cambio por talla", "claves": "cambio de talla, cambiar la talla, no me quedo, me quedo grande, me quedo pequeno, me quedo", "respuesta": "Si no te quedó, la cambiamos por otra talla dentro de los 7 días, sin usar, con etiqueta y su nota de entrega.", "paquete": "ropa-calzado", "activo": "SI"}, {"pregunta": "Fotos reales", "claves": "fotos reales, como se ve puesto, foto real, mas fotos, video, se ve igual", "respuesta": "Sí, te mandamos fotos o video reales del producto por WhatsApp al +{whatsapp}.", "paquete": "ropa-calzado", "activo": "SI"}, {"pregunta": "Medirse en tienda", "claves": "probador, probarmelo, medirmelo, me lo puedo probar, probar", "respuesta": "Sí, en la tienda puedes medirte las prendas antes de comprar.", "paquete": "ropa-calzado", "activo": "SI"}, {"pregunta": "¿Original o réplica?", "claves": "original, originales, replica, imitacion, son de marca, 1.1", "respuesta": "Todos nuestros productos son originales. / Indicamos en cada producto si es original o de fabricación nacional.", "paquete": "ropa-calzado", "activo": "SI"}, {"pregunta": "Nueva colección", "claves": "nueva coleccion, cuando llega mercancia, llego mercancia, novedades, lo nuevo, temporada", "respuesta": "Recibimos mercancía nueva cada semana. Síguenos en @{instagram} para ver lo último.", "paquete": "ropa-calzado", "activo": "SI"}, {"pregunta": "Ropa de niños", "claves": "ninos, nino, nina, ninas, infantil, bebe, para ninos", "respuesta": "Por ahora solo manejamos ropa para dama y caballero.", "paquete": "ropa-calzado", "activo": "SI"}, {"pregunta": "Unisex", "claves": "unisex, para hombre, para mujer, dama, caballero", "respuesta": "Cada producto indica si es para dama, caballero o unisex. Si tienes dudas, pregúntanos.", "paquete": "ropa-calzado", "activo": "SI"}, {"pregunta": "Al mayor (ropa)", "claves": "docena, por docena, surtido, tallas surtidas, curva de tallas", "respuesta": "Al mayor vendemos desde {min_mayor} piezas, y puedes surtir tallas y colores. Escríbenos al +{whatsapp}.", "paquete": "ropa-calzado", "activo": "SI"}], "sin": [{"palabra": "camiseta", "equivale": "franela"}, {"palabra": "camisetas", "equivale": "franelas"}, {"palabra": "remera", "equivale": "franela"}, {"palabra": "playera", "equivale": "franela"}, {"palabra": "jeans", "equivale": "jean"}, {"palabra": "blue", "equivale": "jean"}, {"palabra": "gomas", "equivale": "zapatos"}, {"palabra": "tenis", "equivale": "zapatos"}, {"palabra": "zapatillas", "equivale": "zapatos"}, {"palabra": "cotizas", "equivale": "sandalias"}, {"palabra": "chancletas", "equivale": "sandalias"}, {"palabra": "short", "equivale": "shorts"}, {"palabra": "mono", "equivale": "pantalon"}, {"palabra": "suéter", "equivale": "sueter"}, {"palabra": "hoodie", "equivale": "sudadera"}]};
+/* ============ NOVI · DICCIONARIO ============
+   Aquí se le enseña a Novi a entender. Cada intención tiene la lista de formas de preguntarla.
+   Reglas para agregar frases:
+   - Todo en minúsculas, sin acentos ni signos ("cuanto vendi", no "¿Cuánto vendí?").
+   - Las frases de varias palabras valen más que las sueltas, así que una frase específica gana.
+   - Si dos intenciones empatan, gana la que está más arriba en esta lista.
+   - Las palabras sueltas de 5 letras o más se reconocen aunque tengan un error de tipeo ("bentas" = "ventas").
+   Después de editar: correr  python3 herramientas/armar.py  y  node herramientas/probar.js
+*/
+const NV_INT = [
+  ["quien_eres", ["quien eres","quien sos","como te llamas","que eres","eres un robot","eres una ia","eres 1 ia","eres ia","eres inteligencia artificial","eres real","eres humano","quien te creo","quien te hizo"]],
+  ["tasa", ["tasa","tasas","bcv","tasa del dia","tasa de hoy","tasa oficial","a cuanto esta el dolar","a como esta el dolar","cuanto esta el dolar","como esta el dolar","precio del dolar","valor del dolar","dolar hoy","dolar de hoy","el dolar","euro","precio del euro","cambio del dia","actualizar tasa","cambiar tasa","cambiar la tasa","actualizar la tasa"]],
+  ["convertir", ["cuanto es","cuanto son","cuanto seria","cuanto serian","en bs","en bolivares","a bs","a bolivares","en dolar","a dolar","a dolares","en divisas","convierte","convertir","conversion","pasame","pasar a","calcula","calculame"]],
+  ["hora", ["que hora es","que horas son","hora","la hora","hora es","dime la hora"]],
+  ["fecha", ["que dia es","que dia es hoy","que fecha es","fecha de hoy","que fecha","fecha","en que dia estamos","que dia estamos","a cuanto estamos"]],
+  ["mejor_dia", ["mejor dia","mejores dias","peor dia","que dia vendo mas","dia que mas vendo","dia que mas se vende","dias mas fuertes","dia mas fuerte","dia de la semana","dias de la semana","que dia se vende mas","que dias vendo mas","dia flojo","dias flojos"]],
+  ["mejores_clientes", ["mejores clientes","mejor cliente","quien compra mas","quienes compran mas","quien me compra mas","clientes que mas compran","cliente que mas compra","clientes frecuentes","top clientes","clientes fieles","mejores compradores","quien gasta mas"]],
+  ["cliente_info", ["telefono de","telefono del","numero de","whatsapp de","wasap de","datos de","direccion de","donde vive","que compro","que ha comprado","que se llevo","que me compro","compras de","historial de","info de","informacion de","contacto de","ficha de","buscar cliente","busca al cliente","el cliente","la clienta"]],
+  ["compra", ["lista de compra","lista de compras","que tengo que comprar","que debo comprar","que hay que comprar","que me falta comprar","que necesito comprar","que pido","que le pido al proveedor","pedir al proveedor","pedido al proveedor","reponer","reposicion","surtir","que surtir","hacer pedido de mercancia","comprar mercancia","que mercancia falta"]],
+  ["vencidas", ["vencida","vencidas","vencido","vencidos","vence","vencen","vence hoy","vencen hoy","se vence","atrasado","atrasados","atrasada","atrasadas","morosos","moroso","morosa","cuotas de hoy","cobrar hoy","a quien cobro hoy","que cobro hoy","a quien le cobro","cuotas","cuota","cuotas pendientes","pagos atrasados"]],
+  ["deben", ["quien me debe","quienes me deben","me debe","me deben","debe","deben","deudores","deudor","deudora","deuda","deudas","fiado","fiados","fiao","fiaos","credito","creditos","por cobrar","cuentas por cobrar","saldo","saldos","cuanto me deben","cuanto me debe","lo que me deben","plata en la calle"]],
+  ["bajos", ["stock bajo","inventario bajo","bajo","bajos","agotado","agotados","agotada","agotadas","se acabo","se acabaron","poco stock","por agotarse","por acabarse","sin stock","se esta acabando","se estan acabando","alertas","alerta","que falta","que me falta","faltantes","bajo minimo","bajo el minimo","quedan pocos","quedan pocas"]],
+  ["top", ["mas vendido","mas vendidos","mas vendida","mas vendidas","lo que mas se vende","lo que mas sale","mas sale","mas salen","top","top 10","estrella","productos estrella","mejores productos","mas se vende","mas se venden","que se vende","que es lo que mas vendo","que vendo mas","lo mas pedido","mas pedidos","ranking","menos vendido","menos vendidos"]],
+  ["ganancia", ["ganancia","ganancias","utilidad","utilidades","gane","ganamos","rentabilidad","neto","ganancia neta","cuanto gane","cuanto ganamos","beneficio","margen","cuanto me queda","me queda libre"]],
+  ["caja", ["caja","cierre","cierre de caja","cerrar","cerrar caja","cuadrar","cuadre","cuadrar caja","arqueo","efectivo en caja","cuanto hay en caja","cuanto efectivo","plata en caja","cuanto debe haber"]],
+  ["pagos", ["forma de pago","formas de pago","por metodo","metodo de pago","metodos de pago","por pago","pago movil","zelle","efectivo","transferencia","como me pagaron","como pagaron","por forma de pago","por banco","punto de venta","tarjeta","binance","divisas","en divisas","entro por","entro en"]],
+  ["pendientes", ["pendiente","pendientes","por atender","falta por atender","sin pagar","sin confirmar","pedidos nuevos","pedido nuevo","por confirmar","pedido","pedidos","ordenes","orden","que pedidos tengo","pedidos de hoy","llego algun pedido","hay pedidos"]],
+  ["gastos", ["gasto","gastos","gaste","gastamos","egresos","egreso","en que gaste","cuanto gaste","cuanto he gastado","salidas de dinero"]],
+  ["stock", ["stock","cuanto queda","cuantos quedan","cuantas quedan","queda","quedan","existencia","existencias","tengo de","hay de","cuanto hay","cuantos hay","cuantas hay","disponible","disponibles","cuantas unidades","cuantos tengo","cuantas tengo","tienes","tenemos","hay","busca","buscar","buscame","precio de","cuanto cuesta","cuanto vale","a cuanto esta"]],
+  ["inventario", ["valor del inventario","cuanto vale el inventario","cuanto vale mi inventario","inventario","inventario total","capital","mercancia","cuanto tengo invertido","cuanto hay en mercancia","valor de la mercancia","vale la mercancia"]],
+  ["ventas", ["vendi","vendido","venta","ventas","vendimos","vende","vendo","vendiste","cobrado","cobre","cobramos","cobros","facture","facturado","facturamos","facturacion","ingreso","ingresos","cuanto hice","cuanto hicimos","cuanto llevo","como voy","como vamos","como va","cuanto entro","cuanto ha entrado","plata","dinero","resumen","como estamos","como va el negocio","movimiento","como fue el dia","he vendido"]],
+  ["saludo", ["hola","holaa","buenas","buen dia","buenos dias","buenas tardes","buenas noches","hey","epa","epale","que tal","saludos","que mas","como estas"]],
+  ["despedida", ["chao","chau","adios","nos vemos","hasta luego","hasta manana","bye","me voy"]],
+  ["menu", ["menu","ayuda","opciones","que puedes hacer","que sabes hacer","que haces","comandos","help","que mas puedes hacer","para que sirves","como funcionas","no se que preguntar"]],
+  ["gracias", ["gracias","muchas gracias","listo","ok","okey","perfecto","chevere","fino","dale","excelente","genial","buenisimo","de una"]]
+];
+/* Palabras que no ayudan a buscar productos o clientes */
+const NV_STOP = new Set(("de del la el los las lo un una unos unas me mi mis que en y a al por para con cuanto cuantos cuanta cuantas hay queda quedan " +
+  "tengo tiene tienes tenemos stock existencia existencias producto productos disponible disponibles dime decime muestrame ver quiero saber sobre " +
+  "esta este estos estas cual cuales es son hoy porfa favor precio cuesta vale busca buscar buscame unidades he has ha vendido vendi vendimos se " +
+  "quien quienes cliente clienta telefono numero datos direccion compro comprado llevo compras historial info informacion contacto ficha whatsapp wasap debe deben quien quienes").split(" "));
+/* Sinónimos que vienen de fábrica. Cada negocio agrega los suyos en la hoja Novi_Sinonimos. */
+const NV_SIN0 = {fiao:"fiado", fiaos:"fiados", verdes:"dolar", lechugas:"dolar", dolares:"dolar", usd:"dolar", bolos:"bs", bolivares:"bs", bolivar:"bs", ves:"bs",
+  xq:"porque", pq:"porque", q:"que", k:"que", tb:"tambien", hoi:"hoy", wasa:"whatsapp", wsp:"whatsapp", ws:"whatsapp", tlf:"telefono", tel:"telefono", nro:"numero"};
+
+/* ============ NOVI · MOTOR DE REGLAS ============
+   Funciones puras: limpiar texto, detectar intención, sacar períodos, montos, pedidos, productos y clientes.
+   No usan IA ni internet. Se prueban solas con herramientas/probar.js */
+const NV_NUM = ["cero","uno","dos","tres","cuatro","cinco","seis","siete","ocho","nueve","diez"];
+let NV_SIN = Object.assign({}, NV_SIN0);           // se completa con la hoja Novi_Sinonimos del negocio
+let NV_FAQ = [];                                     // filas de la hoja Novi_Faq: {pregunta, claves, respuesta}
+function nvCargarDatos(d){
+  NV_SIN = Object.assign({}, NV_SIN0);
+  ((d && d.sin) || []).forEach(s => { const a = nvLimpio(s.palabra), b = nvLimpio(s.equivale); if (a && b) NV_SIN[a] = b; });
+  NV_FAQ = ((d && d.faq) || []).filter(f => f.respuesta && String(f.activo || "SI").toUpperCase() !== "NO")
+    .map(f => ({p:f.pregunta || "", r:f.respuesta, k:String(f.claves || "").split(/[,;\n]+/).map(nvNorm).filter(Boolean)}));
+}
+const nvLimpio = s => String(s == null ? "" : s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9ñ\s]/g, " ").replace(/ñ/g, "n").replace(/\s+/g, " ").trim();
+function nvNorm(s){
+  let t = String(s == null ? "" : s).toLowerCase().replace(/\$/g, " dolar ").replace(/€/g, " euro ");
+  t = nvLimpio(t).replace(/\bun par\b/g, "2").replace(/\b(uno|una)\b/g, "1");
+  t = t.split(" ").map(w => { const i = NV_NUM.indexOf(w); return i > 1 ? String(i) : (NV_SIN[w] || w); }).join(" ");
+  return t.replace(/\s+/g, " ").trim();
+}
+const nvHas = (t, ph) => (" " + t + " ").indexOf(" " + ph + " ") > -1;
+function nvLev(a, b){
+  if (Math.abs(a.length - b.length) > 2) return 9;
+  const v = Array(b.length + 1).fill(0).map((_, i) => i);
+  for (let i = 1; i <= a.length; i++) { let p = v[0]; v[0] = i;
+    for (let j = 1; j <= b.length; j++) { const x = v[j]; v[j] = Math.min(v[j] + 1, v[j - 1] + 1, p + (a[i - 1] === b[j - 1] ? 0 : 1)); p = x; } }
+  return v[b.length];
+}
+/* Puntaje de una lista de frases: suma las palabras de cada frase encontrada; las palabras sueltas largas aceptan 1 error de tipeo */
+let NV_EXACTAS = null;   // palabras sueltas que ya son frase de alguna intención: no se corrigen como error de tipeo
+function nvPuntaje(t, frases){
+  if (!NV_EXACTAS) { NV_EXACTAS = new Set(); NV_INT.forEach(([, l]) => l.forEach(ph => { if (ph.indexOf(" ") < 0) NV_EXACTAS.add(ph); })); }
+  const ws = t.split(" ").filter(w => !NV_EXACTAS.has(w));
+  return frases.reduce((a, ph) => {
+    if (nvHas(t, ph)) return a + ph.split(" ").length;
+    if (ph.length >= 5 && ph.indexOf(" ") < 0 && ws.some(w => w.length >= 5 && w[0] === ph[0] && nvLev(w, ph) <= 1)) return a + 1;
+    return a;
+  }, 0);
+}
+function nvIntent(t, raw){
+  const monto = nvMonto(raw || t);
+  let best = null, sc = 0;
+  NV_INT.forEach(([k, l]) => {
+    if (k === "convertir" && !monto) return;          // "cuánto es" solo convierte si hay un monto con moneda
+    const n = nvPuntaje(t, l) + (k === "convertir" ? 2 : 0);
+    if (n > sc) { sc = n; best = k; }
+  });
+  return {i:best, s:sc};
+}
+function nvFaq(t){
+  let best = null, sc = 0;
+  NV_FAQ.forEach(f => { const n = nvPuntaje(t, f.k); if (n > sc) { sc = n; best = f; } });
+  return {f:best, s:sc};
+}
+/* Montos con moneda: "$20", "20 dolares", "500 bs", "1.250,50 bs" */
+function nvNumero(s){
+  s = String(s);
+  if (s.indexOf(".") > -1 && s.indexOf(",") > -1) s = s.replace(/\./g, "").replace(",", ".");
+  else if (s.indexOf(",") > -1) s = s.replace(",", ".");
+  else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "");
+  const n = parseFloat(s); return isNaN(n) ? null : n;
+}
+function nvMonto(raw){
+  const t = String(raw || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const mon = "(\\$|usd|dolar(?:es)?|verdes|divisas?|bs\\.?|bss|bolivar(?:es)?|bolos|ves|euros?|€)";
+  let m = new RegExp("(\\d[\\d.,]*)\\s*" + mon).exec(t) || null, num, cur;
+  if (m) { num = m[1]; cur = m[2]; }
+  else { m = new RegExp(mon + "\\s*(\\d[\\d.,]*)").exec(t); if (m) { cur = m[1]; num = m[2]; } }
+  if (!m) return null;
+  const n = nvNumero(num.replace(/[.,]$/, "")); if (n === null) return null;
+  const c = /bs|bol|ves/.test(cur) ? "bs" : /eur|€/.test(cur) ? "eur" : "usd";
+  return {n, c};
+}
+/* Número de pedido: "pedido 1003", "PED-1003", "nota 12" */
+function nvPedidoRef(raw){
+  const t = String(raw || "").toLowerCase();
+  let m = /\bped[-\s#]*(\d{3,6})\b/.exec(t) || /\b(?:pedido|orden)\s*(?:n(?:ro|umero|°|º)?\.?\s*|#\s*)?(\d{3,6})\b/.exec(t);
+  if (m) return {tipo:"ped", n:m[1]};
+  m = /\bnota\s*(?:de entrega\s*)?(?:n(?:ro|umero|°|º)?\.?\s*|#\s*)?(\d{1,6})\b/.exec(t);
+  return m ? {tipo:"nota", n:m[1]} : null;
+}
+/* Quita del texto las frases de intención para quedarse con lo que se busca (producto o cliente) */
+function nvResto(t){
+  let r = " " + t + " ";
+  NV_INT.forEach(([, l]) => l.slice().sort((a, b) => b.length - a.length).forEach(ph => { r = r.split(" " + ph + " ").join(" "); }));
+  r = r.replace(/\b(esta semana|semana pasada|semana anterior|este mes|mes pasado|mes anterior|ultimos 7 dias|7 dias|todo el tiempo|historico|siempre|hoy|ayer|semana|mes|dia)\b/g, " ");
+  return r.split(" ").filter(w => (w.length > 1 || /\d/.test(w)) && !NV_STOP.has(w)).join(" ").trim();
+}
+/* Búsqueda aproximada en una lista: cada elemento trae el texto donde buscar */
+function nvAprox(q, lista, texto){
+  const toks = nvNorm(q).split(" ").filter(w => (w.length > 1 || /\d/.test(w)) && !NV_STOP.has(w));
+  if (!toks.length) return [];
+  const qj = toks.join("");
+  return lista.map(x => {
+    const nm = nvNorm(texto(x)), ws = nm.split(" "), nj = nm.replace(/ /g, "");
+    let s = toks.reduce((a, w) => a + Math.max(0, ...ws.map(y => y === w ? 1 : (/\d/.test(w) ? 0 : (w.length >= 3 && y.indexOf(w) === 0) ? .9 : (w.length >= 4 && nvLev(w, y) <= 1) ? .8 : (w.length >= 6 && nvLev(w, y) <= 2) ? .6 : 0))), 0) / toks.length;
+    if (qj.length >= 4 && nj.indexOf(qj) > -1) s = Math.max(s, 1);
+    return {x, s};
+  }).filter(r => r.s >= .6).sort((a, b) => b.s - a.s);
+}
+
+/* ============ NOVI · RESPUESTAS E INTERFAZ DEL PANEL ============
+   Usa los datos que el panel ya tiene cargados (P productos, O pedidos, E gastos, K cierres, CL agenda, C config)
+   y las mismas fórmulas del panel. Las únicas acciones que cambian datos piden confirmación (por ahora: la tasa). */
+const NOVI_SVG = () => '<svg viewBox="0 0 120 120" aria-hidden="true"><defs><linearGradient id="nvH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f8ff7"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient></defs>' +
   '<path d="M60 3c1.6 7.4 3.2 9 10.6 10.6C63.2 15.2 61.6 16.8 60 24.2 58.4 16.8 56.8 15.2 49.4 13.6 56.8 12 58.4 10.4 60 3z" fill="#7cb3ff"/>' +
   '<rect x="57.5" y="22" width="5" height="14" rx="2.5" fill="#3b82f6"/>' +
   '<rect x="11" y="58" width="14" height="30" rx="6" fill="#2563eb"/><rect x="95" y="58" width="14" height="30" rx="6" fill="#2563eb"/>' +
@@ -816,40 +971,10 @@ const NOVI_SVG = (w) => '<svg viewBox="0 0 120 120" ' + (w ? 'width="' + w + '" 
   '<ellipse class="nv-eye" cx="48" cy="67" rx="6" ry="7.5" fill="#7dd3fc"/><ellipse class="nv-eye" cx="72" cy="67" rx="6" ry="7.5" fill="#7dd3fc"/>' +
   '<path d="M52 78q8 6.5 16 0" stroke="#7dd3fc" stroke-width="3.6" fill="none" stroke-linecap="round"/></svg>';
 
-const NV = {open:false, wait:null, started:false, last:null};
-const nvNorm = s => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
-  .replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim()
-  .replace(/\b(uno|una|un par)\b/g, m => m === "un par" ? "2" : "1")
-  .replace(/\b(dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez)\b/g, m => String(["dos","tres","cuatro","cinco","seis","siete","ocho","nueve","diez"].indexOf(m) + 2));
+const NV_INACTIVO = 5 * 60 * 1000;   // 5 minutos sin escribir: se borra la conversación
+const NV = {open:false, started:false, wait:null, last:null, pend:null, act:0, bcvPedida:false, voz:null};
 
-/* Diccionario de intenciones. El orden decide los empates: lo más específico primero. */
-const NV_INT = [
-  ["compra", ["lista de compra","lista de compras","que compro","que tengo que comprar","que debo comprar","que hay que comprar","pedir al proveedor","reponer","reposicion","comprar"]],
-  ["vencidas", ["vencida","vencidas","vencido","vencidos","vence","vencen","atrasado","atrasados","atrasada","morosos","moroso","cuotas de hoy","cobrar hoy","cuotas","cuota"]],
-  ["deben", ["quien me debe","quienes me deben","me debe","me deben","deben","deudores","deudor","deuda","deudas","fiado","fiados","fiao","credito","creditos","por cobrar","saldo","saldos"]],
-  ["bajos", ["stock bajo","bajo","bajos","agotado","agotados","se acabo","se acabaron","poco stock","por agotarse","sin stock","se esta acabando","alertas"]],
-  ["top", ["mas vendido","mas vendidos","lo que mas se vende","lo que mas sale","mas sale","mas salen","top","estrella","mejores productos","mas se vende","mas se venden","que se vende"]],
-  ["ganancia", ["ganancia","ganancias","utilidad","utilidades","gane","ganamos","rentabilidad","neto"]],
-  ["caja", ["caja","cierre","cerrar","cuadrar","cuadre","arqueo"]],
-  ["pagos", ["forma de pago","formas de pago","por metodo","metodo de pago","metodos de pago","por pago","pago movil","zelle","efectivo","transferencia","como me pagaron","como pagaron"]],
-  ["pendientes", ["pendiente","pendientes","por atender","sin pagar","pedidos nuevos","por confirmar","pedido","pedidos"]],
-  ["gastos", ["gasto","gastos","gaste","gastamos","egresos"]],
-  ["stock", ["stock","cuanto queda","cuantos quedan","cuantas quedan","queda","quedan","existencia","existencias","tengo de","hay de","cuanto hay","cuantos hay","cuantas hay","disponible"]],
-  ["inventario", ["valor del inventario","cuanto vale el inventario","inventario","capital","mercancia"]],
-  ["ventas", ["vendi","vendido","venta","ventas","vendimos","vende","cobrado","cobre","cobramos","facture","facturado","facturamos","ingreso","ingresos","cuanto hice","cuanto hicimos","cuanto llevo","como voy","como vamos","cuanto entro","cuanto ha entrado","plata","resumen"]],
-  ["saludo", ["hola","buenas","buenos dias","buenas tardes","buenas noches","hey","epa","que tal","saludos"]],
-  ["menu", ["menu","ayuda","opciones","que puedes hacer","que sabes hacer","que haces","comandos","help"]],
-  ["gracias", ["gracias","listo","ok","okey","perfecto","chevere","fino","dale","excelente"]]
-];
-const NV_STOP = new Set("de del la el los las lo un una unos unas me mi mis que en y a al por para con cuanto cuantos cuanta cuantas hay queda quedan tengo tiene tienes tenemos stock existencia existencias producto productos disponible dime decime muestrame ver quiero saber sobre esta este cual cuales es son hoy porfa favor".split(" "));
-const nvHas = (t, ph) => (" " + t + " ").indexOf(" " + ph + " ") > -1;
-function nvIntent(t){
-  let best = null, sc = 0;
-  NV_INT.forEach(([k, l]) => { const n = l.filter(ph => nvHas(t, ph)).length; if (n > sc) { sc = n; best = k; } });
-  return best;
-}
-
-/* Períodos: hoy, ayer, semana, semana pasada, mes, mes pasado */
+/* ---------- Ayudantes ---------- */
 function nvPeriodo(t, def){
   const h = hoyKey(), dd = n => addDias(h, n);
   let k = def;
@@ -858,50 +983,73 @@ function nvPeriodo(t, def){
   else if (/\bsemana\b|\b7 dias\b|\bsemanal\b/.test(t)) k = "semana";
   else if (/\bmes (pasado|anterior)\b/.test(t)) k = "mesP";
   else if (/\bmes\b|\bmensual\b|\bcomo (voy|vamos)\b/.test(t)) k = "mes";
+  else if (/\b(siempre|historico|todo el tiempo|todos los tiempos)\b/.test(t)) k = "todo";
   else if (/\bhoy\b|\bdia\b/.test(t)) k = "hoy";
   const m1 = h.slice(0, 8) + "01", mp1 = addMes(m1, -1), mpp1 = addMes(m1, -2);
-  const P = {
+  const T = {
     hoy:     {a:h, b:h, pa:dd(-1), pb:dd(-1), lbl:"Hoy", vs:"ayer"},
     ayer:    {a:dd(-1), b:dd(-1), pa:dd(-2), pb:dd(-2), lbl:"Ayer", vs:"anteayer"},
     semana:  {a:dd(-6), b:h, pa:dd(-13), pb:dd(-7), lbl:"Últimos 7 días", vs:"los 7 días anteriores"},
     semanaP: {a:dd(-13), b:dd(-7), pa:dd(-20), pb:dd(-14), lbl:"La semana pasada", vs:"la semana anterior"},
     mes:     {a:m1, b:h, pa:mp1, pb:addMes(h, -1), lbl:"Este mes", vs:"el mes pasado a la misma fecha"},
-    mesP:    {a:mp1, b:addDias(m1, -1), pa:mpp1, pb:addDias(mp1, -1), lbl:"El mes pasado", vs:"el mes anterior"}
+    mesP:    {a:mp1, b:addDias(m1, -1), pa:mpp1, pb:addDias(mp1, -1), lbl:"El mes pasado", vs:"el mes anterior"},
+    todo:    {a:"0000-00-00", b:h, pa:"0000-00-00", pb:"0000-00-00", lbl:"Desde el inicio", vs:""}
   };
-  return Object.assign({k}, P[k]);
+  return Object.assign({k}, T[k]);
 }
 const nvIn = (v, a, b) => { const k = dkey(v); return k >= a && k <= b; };
 const nvBs = n => '<span class="mu">' + bs(n) + '</span>';
 const nvPct = (a, b) => { if (!b) return a ? '<span class="up">nuevo</span>' : '<span class="mu">igual</span>'; const p = Math.round((a - b) / b * 100); return p === 0 ? '<span class="mu">igual</span>' : '<span class="' + (p > 0 ? "up" : "dn") + '">' + (p > 0 ? "▲ " : "▼ ") + Math.abs(p) + '%</span>'; };
 const nvLn = (a, b) => '<div class="ln"><span>' + a + '</span><b>' + b + '</b></div>';
 const nvDias = k => { const d = Math.round((Date.parse(hoyKey() + "T12:00:00") - Date.parse(dkey(k) + "T12:00:00")) / 864e5); return d <= 0 ? "hoy" : d === 1 ? "ayer" : "hace " + d + " días"; };
-
-/* Búsqueda aproximada de productos (tolera errores de escritura y espacios) */
-function nvLev(a, b){
-  if (Math.abs(a.length - b.length) > 2) return 9;
-  const v = Array(b.length + 1).fill(0).map((_, i) => i);
-  for (let i = 1; i <= a.length; i++) { let p = v[0]; v[0] = i;
-    for (let j = 1; j <= b.length; j++) { const t = v[j]; v[j] = Math.min(v[j] + 1, v[j - 1] + 1, p + (a[i - 1] === b[j - 1] ? 0 : 1)); p = t; } }
-  return v[b.length];
+const nvNumBs = n => Number(n || 0).toLocaleString("es-VE", {minimumFractionDigits:2, maximumFractionDigits:2});
+const nvVivo = o => o.estado !== "Cancelado";
+/* Rellena {negocio}, {whatsapp}, {pagos}… con los datos de Ajustes */
+function nvPlantilla(s){
+  const v = {negocio:C.negocio, legal:C.legal || C.negocio, rif:C.rif, correo:C.correo, whatsapp:C.whatsapp, instagram:C.instagram, tiktok:C.tiktok, ciudad:C.ciudad, lema:C.lema,
+    pagos:(C.pagos || []).join(", "), entregas:(C.entregas || []).join(", "), tasa:nvNumBs(C.tasa), min_mayor:C.min_mayor || 5};
+  return String(s || "").replace(/\{(\w+)\}/g, (m, k) => v[k] !== undefined && v[k] !== "" ? String(v[k]) : "—");
 }
-function nvBuscar(q){
-  const toks = nvNorm(q).split(" ").filter(w => (w.length > 1 || /\d/.test(w)) && !NV_STOP.has(w));
-  if (!toks.length) return [];
-  const qj = toks.join("");
-  return P.map(p => {
-    const nm = nvNorm(pname(p) + " " + (p.marca || "")), ws = nm.split(" "), nj = nm.replace(/ /g, "");
-    let s = toks.reduce((a, w) => a + Math.max(0, ...ws.map(x => x === w ? 1 : (w.length >= 3 && x.indexOf(w) === 0) ? .9 : (w.length >= 4 && nvLev(w, x) <= 1) ? .8 : (w.length >= 6 && nvLev(w, x) <= 2) ? .6 : 0)), 0) / toks.length;
-    if (qj.length >= 4 && nj.indexOf(qj) > -1) s = Math.max(s, 1);
-    return {p, s};
-  }).filter(x => x.s >= .6).sort((a, b) => b.s - a.s || a.p.nombre.localeCompare(b.p.nombre));
+const NV_DIAS = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+const nvHora = () => new Date().toLocaleTimeString("es-VE", {timeZone:"America/Caracas", hour:"numeric", minute:"2-digit", hour12:true});
+const nvFechaLarga = () => new Date().toLocaleDateString("es-VE", {timeZone:"America/Caracas", weekday:"long", day:"numeric", month:"long", year:"numeric"});
+function nvProductos(q){ const r = nvAprox(q, P, p => pname(p) + " " + (p.marca || "")); if (!r.length) return []; const top = r[0].s; return r.filter(x => x.s >= top - .15).map(x => x.x); }
+/* Clientes: la agenda más los nombres que aparecen en los pedidos */
+function nvClientes(){
+  const m = {};
+  O.forEach(o => { const k = cliKey(o); if (!m[k]) m[k] = {k, nombre:o.cliente, telefono:o.telefono || "", direccion:o.direccion || "", notas:""}; });
+  (CL || []).forEach(c => { const k = telK(c.telefono).length >= 7 ? telK(c.telefono) : String(c.nombre || "").trim().toLowerCase(); m[k] = Object.assign(m[k] || {k}, {nombre:c.nombre, telefono:c.telefono || (m[k] || {}).telefono || "", direccion:c.direccion || (m[k] || {}).direccion || "", notas:c.notas || ""}); });
+  return Object.values(m);
 }
-const nvSinIntencion = t => { let r = " " + t + " "; NV_INT.forEach(([, l]) => l.forEach(ph => { r = r.split(" " + ph + " ").join(" "); })); return r.trim(); };
+function nvCliente(q){ const r = nvAprox(q, nvClientes(), c => c.nombre); if (!r.length) return []; const top = r[0].s; return r.filter(x => x.s >= top - .1).map(x => x.x); }
 
-/* ---------- Respuestas ---------- */
+/* ---------- Tasa BCV: Novi avisa y el dueño confirma ---------- */
+function nvTasaPendiente(){
+  const v = Number(C.tasa_bcv) || 0, f = String(C.tasa_bcv_fecha || "");
+  if (!(v > 0) || !f || f > hoyKey() || Math.abs(v - Number(C.tasa)) < 0.005) return 0;
+  try { if (localStorage.getItem("nv_tasa_no") === v + "|" + f) return 0; } catch(e){}
+  return v;
+}
+function nvAvisoTasa(){
+  const v = nvTasaPendiente(); if (!v) return "";
+  NV.pend = {tipo:"tasa", v, f:C.tasa_bcv_fecha};
+  return '<br><br>💱 La tasa BCV vigente es <b>' + nvNumBs(v) + ' Bs/$</b> (desde ' + fdate(C.tasa_bcv_fecha) + ') y tu sistema tiene <b>' + nvNumBs(C.tasa) + '</b>. ¿La actualizo?';
+}
+const NV_CH_TASA = ["Sí, actualizar la tasa","Dejar la tasa así"];
+async function nvPedirBcv(forzar){
+  if (NV.bcvPedida && !forzar) return null;
+  NV.bcvPedida = true;
+  try { const j = await api("tasa_bcv"); apply(j); return j; } catch(e){ return null; }
+}
+
+/* ---------- Respuestas por intención ---------- */
+const NV_MENU = ["Ventas de hoy","Cierre de caja","Lo más vendido","Stock bajo","Lista de compra","Quién me debe","Cuotas vencidas","Pedidos pendientes","Tasa del dólar","Mejores clientes","Mejor día de venta","Buscar un pedido","Datos de un cliente","Valor del inventario","Ganancia del mes"];
 const NV_R = {
-  menu: () => ({h:"Puedo ayudarte con esto. Toca un botón o escríbeme, por ejemplo <i>“cuánto vendí esta semana”</i> o <i>“stock de harina”</i>.", c:NV_MENU}),
+  menu: () => ({h:"Puedo ayudarte con esto. Toca un botón o escríbeme, por ejemplo <i>“cuánto vendí esta semana”</i>, <i>“stock de harina”</i>, <i>“cuánto son $20 en bolívares”</i> o <i>“teléfono de María”</i>." + (NV.voz ? "<br>También puedes hablarme con el 🎤." : ""), c:NV_MENU}),
   saludo: () => NV_R.inicio(),
+  quien_eres: () => ({h:"Soy <b>Novi</b>, el asistente de tu panel, creado por JB NOVA. No soy una inteligencia artificial: respondo con reglas y con los datos reales de tu negocio, así que nunca invento un número. Si algo no lo entiendo, te muestro lo que sí sé hacer.", c:NV_MENU.slice(0, 6)}),
   gracias: () => ({h:"¡Con gusto! Aquí estoy si necesitas algo más. 💙", c:["Ventas de hoy","Stock bajo","Quién me debe"]}),
+  despedida: () => ({h:"¡Hasta luego! Cuando me necesites, toca el robot. 👋", c:[]}),
   inicio: () => {
     const hoy = hoyKey(), vh = r2(O.flatMap(cobros).filter(c => dkey(c.f) === hoy).reduce((a, c) => a + c.m, 0));
     const pend = O.filter(o => o.estado === "Pendiente").length, low = P.filter(p => p.activo && p.stock <= p.minimo).length;
@@ -910,19 +1058,50 @@ const NV_R = {
     if (pend) al.push("<b>" + pend + "</b> " + (pend === 1 ? "pedido pendiente" : "pedidos pendientes"));
     if (low) al.push("<b>" + low + "</b> " + (low === 1 ? "producto con stock bajo" : "productos con stock bajo"));
     if (venc) al.push("<b>" + venc + "</b> " + (venc === 1 ? "cuota vencida o que vence hoy" : "cuotas vencidas o que vencen hoy"));
-    return {h:"¡Hola! Soy <b>Novi</b>, tu asistente de " + esc(C.negocio) + ".<br>Hoy llevas <b>" + usd(vh) + "</b> cobrados." + (al.length ? "<br>Ojo: tienes " + al.join(", ") + "." : " Todo está en orden.") + "<br>¿Qué quieres saber?", c:NV_MENU};
+    const at = nvAvisoTasa();
+    return {h:"¡Hola! Soy <b>Novi</b>, tu asistente de " + esc(C.negocio) + ".<br>Hoy llevas <b>" + usd(vh) + "</b> cobrados." + (al.length ? "<br>Ojo: tienes " + al.join(", ") + "." : " Todo está en orden.") + at + (at ? "" : "<br>¿Qué quieres saber?"), c:at ? NV_CH_TASA.concat(NV_MENU) : NV_MENU};
   },
-  ventas: t => {
-    const pe = nvPeriodo(t, "hoy"), cb = O.flatMap(cobros), act = cb.filter(c => nvIn(c.f, pe.a, pe.b)), ant = cb.filter(c => nvIn(c.f, pe.pa, pe.pb));
+  hora: () => ({h:"Son las <b>" + nvHora() + "</b> (hora de Venezuela).", c:["Qué día es hoy","Ventas de hoy"]}),
+  fecha: () => ({h:"Hoy es <b>" + nvFechaLarga() + "</b>.", c:["Qué hora es","Ventas de hoy"]}),
+  tasa: () => {
+    const v = Number(C.tasa_bcv) || 0, eu = Number(C.tasa_bcv_eur) || 0, pend = nvTasaPendiente();
+    let h = "Tasa de tu sistema: <b>" + nvNumBs(C.tasa) + " Bs por dólar</b>.<br><span class=\"mu\">Es la que usan la tienda y las notas para los precios en Bs.</span>";
+    if (v) h += "<br><br>BCV: <b>" + nvNumBs(v) + " Bs/$</b>" + (eu ? " · euro " + nvNumBs(eu) + " Bs" : "") + '<br><span class="mu">Vigente desde ' + fdate(C.tasa_bcv_fecha) + (String(C.tasa_bcv_fecha) > hoyKey() ? " (publicada para el próximo día hábil)" : "") + ". Fuente no oficial: bcv.today.</span>";
+    else h += "<br><br><span class=\"mu\">Todavía no tengo la tasa BCV consultada.</span>";
+    if (pend) { NV.pend = {tipo:"tasa", v:pend, f:C.tasa_bcv_fecha}; h += "<br><br>¿Actualizo la tasa del sistema a <b>" + nvNumBs(pend) + "</b>?"; return {h, c:NV_CH_TASA.concat(["Cuánto son $20 en Bs"])}; }
+    return {h, c:["Consultar BCV ahora","Cuánto son $20 en Bs","Cuánto son 1000 Bs en dólares"]};
+  },
+  convertir: (t, raw) => {
+    const m = nvMonto(raw) || nvMonto(t), tasa = Number(C.tasa) || 0;
+    if (!m) { NV.wait = "convertir"; return {h:"¿Qué monto convierto? Escríbelo con su moneda, por ejemplo <i>$20</i> o <i>500 Bs</i>.", c:["Cuánto son $20 en Bs","Cuánto son 1000 Bs en dólares","Cancelar"]}; }
+    if (!(tasa > 0)) return {h:"No tengo una tasa cargada en el sistema. Ponla en Ajustes.", c:["Tasa del dólar"]};
+    const pie = '<br><span class="mu">A la tasa de tu sistema: ' + nvNumBs(tasa) + ' Bs/$.</span>';
+    if (m.c === "usd") return {h:usd(m.n) + " son <div class=\"big\">Bs. " + nvNumBs(m.n * tasa) + "</div>" + pie, c:["Tasa del dólar","Cuánto son 1000 Bs en dólares"]};
+    if (m.c === "bs") return {h:"Bs. " + nvNumBs(m.n) + " son <div class=\"big\">" + usd(m.n / tasa) + "</div>" + pie, c:["Tasa del dólar","Cuánto son $20 en Bs"]};
+    const eu = Number(C.tasa_bcv_eur) || 0;
+    if (!eu) return {h:"No tengo la tasa del euro todavía.", c:["Consultar BCV ahora"]};
+    return {h:"€" + nvNumBs(m.n) + " son <div class=\"big\">Bs. " + nvNumBs(m.n * eu) + "</div>(" + usd(m.n * eu / tasa) + ' a tu tasa)<br><span class="mu">Euro BCV: ' + nvNumBs(eu) + ' Bs.</span>', c:["Tasa del dólar"]};
+  },
+  ventas: (t, raw) => {
+    const pe = nvPeriodo(t, "hoy"), q = nvResto(t), pr = q ? nvProductos(q) : [];
+    if (pr.length) return NV_R.ventasProducto(pe, pr);
+    const cb = O.flatMap(cobros), act = cb.filter(c => nvIn(c.f, pe.a, pe.b)), ant = cb.filter(c => nvIn(c.f, pe.pa, pe.pb));
     const tot = r2(act.reduce((a, c) => a + c.m, 0)), tant = r2(ant.reduce((a, c) => a + c.m, 0)), by = {};
     act.forEach(c => by[c.pago || "Otro"] = r2((by[c.pago || "Otro"] || 0) + c.m));
     const n = act.length, tk = n ? r2(tot / n) : 0;
-    let h = pe.lbl + ' cobraste<div class="big">' + usd(tot) + '</div>' + nvBs(tot) + '<br>' + n + (n === 1 ? " cobro" : " cobros") + (n ? " · ticket promedio " + usd(tk) : "") + '<br>' + nvPct(tot, tant) + ' <span class="mu">vs ' + pe.vs + ' (' + usd(tant) + ')</span>';
+    let h = pe.lbl + ' cobraste<div class="big">' + usd(tot) + '</div>' + nvBs(tot) + '<br>' + n + (n === 1 ? " cobro" : " cobros") + (n ? " · ticket promedio " + usd(tk) : "") + (pe.vs ? '<br>' + nvPct(tot, tant) + ' <span class="mu">vs ' + pe.vs + ' (' + usd(tant) + ')</span>' : "");
     if (n) h += '<br><br><b>Por forma de pago</b>' + Object.entries(by).sort((a, b) => b[1] - a[1]).map(([k, v]) => nvLn(esc(k), usd(v))).join("");
     const ch = pe.k === "hoy" ? ["Cierre de caja","Ventas de ayer","Esta semana","Este mes"] : pe.k === "mes" ? ["Ganancia del mes","Lo más vendido del mes","Mes pasado"] : ["Ventas de hoy","Este mes","Lo más vendido"];
-    return {h, c:ch, i:"ventas"};
+    return {h, c:ch};
   },
-  pagos: t => NV_R.ventas(t),
+  ventasProducto: (pe, pr) => {
+    const ids = pr.slice(0, 6).map(p => p.id), m = {};
+    O.filter(o => nvVivo(o) && nvIn(o.fecha, pe.a, pe.b)).forEach(o => o.items.filter(i => ids.indexOf(i.id) > -1).forEach(i => { const x = m[i.id] || (m[i.id] = {q:0, v:0, n:0}); x.q += i.q; x.v = r2(x.v + i.p * i.q); x.n++; }));
+    const l = pr.slice(0, 6).map(p => ({p, x:m[p.id] || {q:0, v:0, n:0}}));
+    if (l.length === 1) { const {p, x} = l[0]; return {h:pe.lbl + " de <b>" + esc(pname(p)) + "</b> vendiste<div class=\"big\">" + x.q + " uds.</div>" + usd(x.v) + " en " + x.n + (x.n === 1 ? " pedido" : " pedidos") + '<br><span class="mu">Te quedan ' + p.stock + ' uds.</span>', c:["Stock de " + pname(p), pe.k === "mes" ? "Ventas de hoy" : "Este mes"]}; }
+    return {h:pe.lbl + ", ventas por producto:" + l.map(({p, x}) => nvLn(esc(pname(p)), x.q + " uds. · " + usd(x.v))).join(""), c:["Lo más vendido","Este mes"]};
+  },
+  pagos: (t, raw) => NV_R.ventas(t.replace(/\b(pago movil|zelle|efectivo|transferencia)\b/g, " "), raw),
   ganancia: t => {
     const pe = nvPeriodo(t, "mes"), act = O.flatMap(cobros).filter(c => nvIn(c.f, pe.a, pe.b));
     const vt = r2(act.reduce((a, c) => a + c.m, 0)), co = r2(act.reduce((a, c) => a + (c.o.total ? c.m / c.o.total * costoDe(c.o) : 0), 0));
@@ -943,21 +1122,26 @@ const NV_R = {
     return {h, c:["Ir a Caja","Ventas de hoy","Por forma de pago"]};
   },
   top: t => {
-    const pe = nvPeriodo(t, "mes"), m = {};
-    O.filter(o => o.estado !== "Cancelado" && nvIn(o.fecha, pe.a, pe.b)).forEach(o => o.items.forEach(i => { const x = m[i.n] || (m[i.n] = {q:0, v:0}); x.q += i.q; x.v = r2(x.v + i.p * i.q); }));
+    const pe = nvPeriodo(t, "mes"), m = {}, menos = /\bmenos\b/.test(t);
+    O.filter(o => nvVivo(o) && nvIn(o.fecha, pe.a, pe.b)).forEach(o => o.items.forEach(i => { const x = m[i.n] || (m[i.n] = {q:0, v:0}); x.q += i.q; x.v = r2(x.v + i.p * i.q); }));
+    if (menos) {
+      const sin = P.filter(p => p.activo && !m[pname(p)]).slice(0, 10);
+      const l = Object.entries(m).sort((a, b) => a[1].q - b[1].q).slice(0, 10);
+      return {h:'<b>Lo que menos se vendió · ' + pe.lbl.toLowerCase() + '</b>' + l.map(([n, x]) => nvLn(esc(n), x.q + " uds.")).join("") + (sin.length ? '<br><b>Sin ventas en el período</b>' + sin.map(p => nvLn(esc(pname(p)), p.stock + " en stock")).join("") : ""), c:["Lo más vendido","Stock bajo"]};
+    }
     const l = Object.entries(m).sort((a, b) => b[1].q - a[1].q || b[1].v - a[1].v).slice(0, 10);
     if (!l.length) return {h:pe.lbl + " todavía no hay ventas.", c:["Lo más vendido del mes pasado","Ventas de hoy"]};
-    return {h:'<b>Lo más vendido · ' + pe.lbl.toLowerCase() + '</b>' + l.map(([n, x], i) => nvLn((i + 1) + ". " + esc(n), x.q + " uds. · " + usd(x.v))).join(""), c:["Stock bajo","Esta semana","Mes pasado"]};
+    return {h:'<b>Lo más vendido · ' + pe.lbl.toLowerCase() + '</b>' + l.map(([n, x], i) => nvLn((i + 1) + ". " + esc(n), x.q + " uds. · " + usd(x.v))).join(""), c:["Lo menos vendido","Stock bajo","Mes pasado"]};
   },
-  stock: (t, raw) => {
-    const q = nvSinIntencion(t), r = nvBuscar(q);
-    if (!q || !nvNorm(q).split(" ").some(w => (w.length > 1 || /\d/.test(w)) && !NV_STOP.has(w))) { NV.wait = "stock"; return {h:"¿De qué producto? Escríbeme el nombre (aunque sea una parte).", c:["Stock bajo","Cancelar"]}; }
-    if (!r.length) return {h:"No encontré <b>" + esc(q) + "</b> en el inventario. Prueba con otra palabra del nombre o la marca.", c:["Stock bajo","Valor del inventario"]};
-    const top = r[0].s, l = r.filter(x => x.s >= top - .15).slice(0, 6).map(x => x.p);
-    const ult = p => { const v = O.filter(o => o.estado !== "Cancelado" && o.items.some(i => i.id === p.id)).map(o => o.fecha).sort().pop(); return v ? "Última venta " + nvDias(v) + " (" + fdate(v) + ")" : "Sin ventas registradas"; };
+  stock: (t) => {
+    const q = nvResto(t);
+    if (!q) { NV.wait = "stock"; return {h:"¿De qué producto? Escríbeme el nombre (aunque sea una parte).", c:["Stock bajo","Cancelar"]}; }
+    const l = nvProductos(q).slice(0, 6);
+    if (!l.length) return {h:"No encontré <b>" + esc(q) + "</b> en el inventario. Prueba con otra palabra del nombre o la marca.", c:["Stock bajo","Valor del inventario"]};
+    const ult = p => { const v = O.filter(o => nvVivo(o) && o.items.some(i => i.id === p.id)).map(o => o.fecha).sort().pop(); return v ? "Última venta " + nvDias(v) + " (" + fdate(v) + ")" : "Sin ventas registradas"; };
     const est = p => !p.activo ? "inactivo" : p.proximo ? "próximo a llegar" : p.stock <= 0 ? '<b class="dn">agotado</b>' : p.stock <= p.minimo ? '<b class="dn">bajo el mínimo</b>' : '<b class="up">en orden</b>';
-    if (l.length === 1) { const p = l[0]; return {h:esc(p.emoji || "📦") + " <b>" + esc(pname(p)) + "</b>" + (p.marca ? ' <span class="mu">' + esc(p.marca) + '</span>' : "") + '<div class="big">' + p.stock + ' uds.</div>Mínimo ' + p.minimo + ' · ' + est(p) + '<br>Precio ' + usd(p.precio) + ' · ' + nvBs(p.bcv || p.precio) + '<br><span class="mu">' + ult(p) + '</span>', c:["Stock bajo","Lista de compra","Ir a Inventario"]}; }
-    return {h:"Encontré " + l.length + " productos:" + l.map(p => nvLn(esc(p.emoji || "📦") + " " + esc(pname(p)), p.stock + " uds.")).join(""), c:["Stock bajo","Ir a Inventario"]};
+    if (l.length === 1) { const p = l[0]; return {h:esc(p.emoji || "📦") + " <b>" + esc(pname(p)) + "</b>" + (p.marca ? ' <span class="mu">' + esc(p.marca) + '</span>' : "") + (p.codigo ? ' <span class="mu">· ' + esc(p.codigo) + '</span>' : "") + '<div class="big">' + p.stock + ' uds.</div>Mínimo ' + p.minimo + ' · ' + est(p) + '<br>Precio ' + usd(p.precio) + (p.bcv ? ' · en Bs ' + nvBs(p.bcv) : ' · ' + nvBs(p.precio)) + (p.mayor ? ' · mayor ' + usd(p.mayor) : "") + '<br><span class="mu">' + ult(p) + '</span>', c:["Cuánto he vendido de " + pname(p), "Stock bajo", "Ir a Inventario"]}; }
+    return {h:"Encontré " + l.length + " productos:" + l.map(p => nvLn(esc(p.emoji || "📦") + " " + esc(pname(p)), p.stock + " uds. · " + usd(p.precio))).join(""), c:["Stock bajo","Ir a Inventario"]};
   },
   bajos: () => {
     const l = P.filter(p => p.activo && p.stock <= p.minimo).sort((a, b) => a.stock - b.stock);
@@ -976,10 +1160,12 @@ const NV_R = {
     const co = r2(P.reduce((a, p) => a + (p.costo || 0) * Math.max(0, p.stock), 0)), ve = r2(l.reduce((a, p) => a + p.precio * p.stock, 0));
     return {h:"<b>Valor del inventario</b>" + nvLn("A precio de costo", usd(co)) + nvLn("A precio de venta", usd(ve)) + nvLn("Ganancia potencial", usd(r2(ve - co))) + '<span class="mu">' + u + ' unidades en ' + l.length + ' productos activos con stock.</span>', c:["Stock bajo","Lo más vendido"]};
   },
-  deben: () => {
+  deben: (t) => {
     if (!MOD("credito")) return {h:"El módulo de ventas a crédito está apagado en este negocio.", c:NV_MENU};
+    const q = nvResto(t), uno = q ? nvCliente(q) : [];
     const g = {};
-    O.filter(o => o.credito && o.estado === "Crédito").forEach(o => { const k = cliKey(o), x = g[k] || (g[k] = {n:o.cliente, s:0, p:0}); x.s = r2(x.s + saldoDe(o)); x.p++; });
+    O.filter(o => o.credito && o.estado === "Crédito").forEach(o => { const k = cliKey(o), x = g[k] || (g[k] = {k, n:o.cliente, s:0, p:0}); x.s = r2(x.s + saldoDe(o)); x.p++; });
+    if (uno.length === 1) { const c = uno[0], x = g[c.k]; return {h:x && x.s > 0 ? esc(c.nombre) + " te debe <div class=\"big\">" + usd(x.s) + "</div>" + nvBs(x.s) + "<br>En " + x.p + (x.p === 1 ? " pedido a crédito." : " pedidos a crédito.") : "✅ " + esc(c.nombre) + " no te debe nada.", c:["Datos de " + c.nombre, "Cuotas vencidas", "Quién me debe"]}; }
     const l = Object.values(g).filter(x => x.s > 0).sort((a, b) => b.s - a.s);
     if (!l.length) return {h:"🎉 Nadie te debe: no hay créditos con saldo pendiente.", c:["Ventas de hoy","Stock bajo"]};
     const tot = r2(l.reduce((a, x) => a + x.s, 0));
@@ -997,49 +1183,131 @@ const NV_R = {
   },
   pendientes: () => {
     const l = O.filter(o => o.estado === "Pendiente").sort((a, b) => Date.parse(a.fecha) - Date.parse(b.fecha));
-    if (!l.length) return {h:"✅ No tienes pedidos pendientes.", c:["Ventas de hoy","Lo más vendido"]};
+    if (!l.length) return {h:"✅ No tienes pedidos pendientes.", c:["Ventas de hoy","Buscar un pedido"]};
     const tot = r2(l.reduce((a, o) => a + o.total, 0));
     return {h:"<b>" + l.length + "</b> " + (l.length === 1 ? "pedido pendiente" : "pedidos pendientes") + " por <b>" + usd(tot) + "</b>:" + l.slice(0, 8).map(o => nvLn(esc(o.id) + " · " + esc(o.cliente) + '<br><span class="mu">' + nvDias(o.fecha) + " · " + esc(o.pago || "") + '</span>', usd(o.total))).join("") + (l.length > 8 ? '<span class="mu">Y ' + (l.length - 8) + ' más.</span>' : ""), c:["Ver pedidos pendientes","Ventas de hoy"]};
-  }
+  },
+  pedido: (ref) => {
+    const o = ref.tipo === "ped" ? O.find(x => String(x.id).toUpperCase() === "PED-" + ref.n) : O.find(x => String(x.nota) === String(Number(ref.n)));
+    if (!o) return {h:"No encontré " + (ref.tipo === "ped" ? "el pedido <b>PED-" + esc(ref.n) + "</b>" : "la nota de entrega <b>#" + esc(ref.n) + "</b>") + ".", c:["Pedidos pendientes","Buscar un pedido"]};
+    const sal = saldoDe(o);
+    return {h:"<b>" + esc(o.id) + "</b> · " + esc(o.estado) + (o.nota ? ' <span class="mu">· nota #' + esc(o.nota) + '</span>' : "") + "<br>" + esc(o.cliente) + (o.telefono ? " · " + esc(o.telefono) : "") + '<br><span class="mu">' + fdt(o.fecha) + " · " + esc(o.pago || "") + " · " + esc(o.entrega || "") + '</span>' + o.items.map(i => nvLn(i.q + " × " + esc(i.n), usd(i.p * i.q))).join("") + '<div class="ln"><span><b>Total</b></span><b>' + usd(o.total) + '</b></div>' + (o.credito ? "Crédito: abonado " + usd(o.abonado) + (sal > 0 ? ' · saldo <b class="dn">' + usd(sal) + '</b>' : " · pagado completo") : ""), c:["Datos de " + o.cliente, "Ver pedidos pendientes"]};
+  },
+  cliente_info: (t) => {
+    const q = nvResto(t);
+    if (!q) { NV.wait = "cliente"; return {h:"¿De qué cliente? Escríbeme su nombre o parte del nombre.", c:["Mejores clientes","Cancelar"]}; }
+    const l = nvCliente(q);
+    if (!l.length) return {h:"No encontré a <b>" + esc(q) + "</b> en la agenda ni en los pedidos.", c:["Mejores clientes","Ir a Clientes"]};
+    if (l.length > 1) return {h:"Encontré " + l.length + " clientes parecidos. ¿Cuál?", c:l.slice(0, 6).map(c => "Datos de " + c.nombre)};
+    const c = l[0], ps = O.filter(o => cliKey(o) === c.k && nvVivo(o)).sort((a, b) => Date.parse(b.fecha) - Date.parse(a.fecha));
+    const tot = r2(ps.reduce((a, o) => a + o.total, 0)), deb = r2(ps.reduce((a, o) => a + saldoDe(o), 0)), m = {};
+    ps.forEach(o => o.items.forEach(i => m[i.n] = (m[i.n] || 0) + i.q));
+    const top = Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 3), tel = String(c.telefono || "").replace(/\D/g, "");
+    let h = "👤 <b>" + esc(c.nombre) + "</b>" + (c.telefono ? "<br>📞 " + esc(c.telefono) : "") + (c.direccion ? "<br>📍 " + esc(c.direccion) : "") + (c.notas ? '<br><span class="mu">' + esc(c.notas) + '</span>' : "");
+    h += ps.length ? nvLn("Pedidos", ps.length) + nvLn("Total comprado", usd(tot)) + nvLn("Último pedido", nvDias(ps[0].fecha) + " (" + esc(ps[0].id) + ")") + (deb > 0 ? nvLn("Saldo a crédito", '<span class="dn">' + usd(deb) + '</span>') : "") + (top.length ? '<br><b>Lo que más compra</b>' + top.map(([n, q2]) => nvLn(esc(n), q2 + " uds.")).join("") : "") : "<br>Todavía no tiene pedidos.";
+    if (tel.length >= 7) h += '<br><a class="nv-wa" target="_blank" rel="noopener" href="https://wa.me/' + esc(tel) + '">Abrir WhatsApp</a>';
+    return {h, c:["Mejores clientes","Quién me debe"]};
+  },
+  mejores_clientes: (t) => {
+    const pe = nvPeriodo(t, "todo"), g = {};
+    O.filter(o => nvVivo(o) && nvIn(o.fecha, pe.a, pe.b)).forEach(o => { const k = cliKey(o), x = g[k] || (g[k] = {n:o.cliente, v:0, p:0}); x.v = r2(x.v + o.total); x.p++; });
+    const l = Object.values(g).sort((a, b) => b.v - a.v).slice(0, 10);
+    if (!l.length) return {h:"Todavía no hay compras en " + pe.lbl.toLowerCase() + ".", c:["Mejores clientes"]};
+    return {h:"<b>Mejores clientes · " + pe.lbl.toLowerCase() + "</b>" + l.map((x, i) => nvLn((i + 1) + ". " + esc(x.n) + ' <span class="mu">(' + x.p + (x.p === 1 ? " pedido" : " pedidos") + ')</span>', usd(x.v))).join(""), c:pe.k === "todo" ? ["Mejores clientes del mes","Datos de " + l[0].n] : ["Mejores clientes","Datos de " + l[0].n]};
+  },
+  mejor_dia: () => {
+    const desde = addDias(hoyKey(), -55), s = [0,0,0,0,0,0,0], d = [{},{},{},{},{},{},{}];
+    O.flatMap(cobros).filter(c => nvIn(c.f, desde, hoyKey())).forEach(c => { const k = dkey(c.f), w = new Date(k + "T12:00:00").getDay(); s[w] = r2(s[w] + c.m); d[w][k] = 1; });
+    if (!s.some(x => x > 0)) return {h:"Todavía no hay cobros suficientes para comparar los días.", c:["Ventas de hoy"]};
+    const ord = [1,2,3,4,5,6,0], prom = w => r2(s[w] / 8);
+    const mx = ord.reduce((a, w) => s[w] > s[a] ? w : a, 1), mn = ord.filter(w => s[w] > 0).reduce((a, w) => s[w] < s[a] ? w : a, mx);
+    return {h:"En las últimas 8 semanas, tu mejor día es el <b>" + NV_DIAS[mx] + "</b> y el más flojo el <b>" + NV_DIAS[mn] + "</b>.<br><span class=\"mu\">Promedio cobrado por día de la semana:</span>" + ord.map(w => nvLn(NV_DIAS[w][0].toUpperCase() + NV_DIAS[w].slice(1), usd(prom(w)))).join(""), c:["Ventas de hoy","Esta semana","Mejores clientes"]};
+  },
+  faq: (f) => { const txt = nvPlantilla(f.r), falta = /\[EDITAR/i.test(txt); return {h:'📋 Así responde Novi a tus clientes' + (f.p ? ' sobre <i>“' + esc(f.p) + '”</i>' : "") + ':<br><br>' + esc(txt).replace(/\n/g, "<br>").replace(/\[EDITAR:?([^\]]*)\]/gi, '<mark>✏️$1</mark>') + '<br><br><span class="mu">' + (falta ? "Lo marcado en amarillo hay que completarlo en la hoja Novi_FAQ: mientras tanto, Novi no la usa con los clientes." : "Puedes cambiar esta respuesta en la hoja Novi_FAQ.") + '</span>', c:["Menú"]}; }
 };
-const NV_MENU = ["Ventas de hoy","Cierre de caja","Lo más vendido","Stock bajo","Lista de compra","Quién me debe","Cuotas vencidas","Pedidos pendientes","Valor del inventario","Ganancia del mes"];
-/* Botones que llevan a una sección del panel */
-const NV_IR = {"ir a caja":["caja"], "ir a inventario":["inv"], "ir a gastos":["gas"], "ver creditos":["ped","Crédito"], "ver pedidos pendientes":["ped","Pendiente"]};
+/* Botones con acción propia (no pasan por el diccionario) */
+const NV_IR = {"ir a caja":["caja"], "ir a inventario":["inv"], "ir a gastos":["gas"], "ir a clientes":["cli"], "ver creditos":["ped","Crédito"], "ver pedidos pendientes":["ped","Pendiente"]};
+const NV_ESP = {
+  "cancelar": () => { NV.wait = null; NV.pend = null; return {h:"Listo. ¿Qué más quieres saber?", c:NV_MENU}; },
+  "buscar un pedido": () => { NV.wait = "pedido"; return {h:"¿Qué número de pedido busco? Por ejemplo <i>1003</i> o <i>nota 12</i>.", c:["Pedidos pendientes","Cancelar"]}; },
+  "datos de un cliente": () => { NV.wait = "cliente"; return {h:"¿De qué cliente? Escríbeme su nombre o parte del nombre.", c:["Mejores clientes","Cancelar"]}; },
+  "consultar bcv ahora": async () => { if (DEMO) { await nvPedirBcv(true); return NV_R.tasa(); } const j = await nvPedirBcv(true); return j ? NV_R.tasa() : {h:"No pude consultar la tasa BCV ahora. Intenta en un rato o revísala en bcv.org.ve.", c:["Tasa del dólar"]}; },
+  "si actualizar la tasa": async () => {
+    const p = NV.pend; NV.pend = null;
+    if (!p || p.tipo !== "tasa") return {h:"No tengo una tasa pendiente por actualizar.", c:["Tasa del dólar"]};
+    const j = await run("tasa_set", {tasa:p.v});
+    if (!j) return {h:"No pude guardar la tasa. Revisa la conexión e intenta de nuevo.", c:NV_CH_TASA};
+    const y = window.scrollY; panel().then(() => window.scrollTo(0, y));
+    return {h:"✅ Listo: la tasa ahora es <b>" + nvNumBs(C.tasa) + " Bs/$</b>. La tienda y las notas ya usan la nueva tasa.", c:["Cuánto son $20 en Bs","Ventas de hoy"]};
+  },
+  "dejar la tasa asi": () => { const p = NV.pend; NV.pend = null; if (p) { try { localStorage.setItem("nv_tasa_no", p.v + "|" + p.f); } catch(e){} } return {h:"Ok, dejo la tasa en <b>" + nvNumBs(C.tasa) + "</b>. Si cambias de idea, pregúntame por la tasa.", c:NV_MENU}; }
+};
+const NV_SI = new Set(["si","sip","dale","ok","okey","confirmo","confirmar","hazlo","de una","actualizala","actualizar","si dale"]), NV_NO = new Set(["no","nop","dejala","deja asi","dejala asi","no gracias","asi esta bien"]);
 
-function nvResponder(txt){
-  const t = nvNorm(txt);
-  if (t === "cancelar") { NV.wait = null; return {r:{h:"Listo. ¿Qué más quieres saber?", c:NV_MENU}, i:"cancelar", ok:true}; }
+/* ---------- Cerebro: decide qué responder ---------- */
+function nvResponder(raw){
+  const t = nvNorm(raw);
   if (NV_IR[t]) { const [tb, st] = NV_IR[t]; tab = tb; if (st) statusF = st; nvToggle(false); panel(); window.scrollTo(0, 0); return null; }
-  let i = nvIntent(t);
-  if (!i && /\b(hoy|ayer|semana|mes)\b/.test(t)) i = ["ventas","pagos","top","gastos","ganancia"].indexOf(NV.last) > -1 ? NV.last : "ventas";
-  if (NV.wait === "stock" && (!i || i === "stock")) { NV.wait = null; return {r:NV_R.stock("stock " + t), i:"stock", ok:true}; }
-  NV.wait = null;
-  if (!i && nvBuscar(t).length && nvBuscar(t)[0].s >= .8) i = "stock";
-  if (!i) return {r:{h:"Todavía no entiendo eso 🤔. Esto sí lo sé responder:", c:NV_MENU}, i:"", ok:false};
+  if (NV_ESP[t]) return {r:NV_ESP[t](), i:t.replace(/ /g, "_"), ok:true};
+  if (NV.pend && NV_SI.has(t)) return {r:NV_ESP["si actualizar la tasa"](), i:"tasa_si", ok:true};
+  if (NV.pend && NV_NO.has(t)) return {r:NV_ESP["dejar la tasa asi"](), i:"tasa_no", ok:true};
+  if (t === "menu") return {r:NV_R.menu(), i:"menu", ok:true};
+  const espera = NV.wait; NV.wait = null;
+  const ref = nvPedidoRef(raw) || (espera === "pedido" && /^\d{1,6}$/.test(t) ? {tipo:"ped", n:t} : null);
+  if (ref) return {r:NV_R.pedido(ref), i:"pedido", ok:true};
+  let {i, s} = nvIntent(t, raw);
+  const fq = nvFaq(t);
+  if (espera === "stock" && (!i || i === "stock")) return {r:NV_R.stock("stock " + t), i:"stock", ok:true};
+  if (espera === "cliente" && (!i || i === "cliente_info")) return {r:NV_R.cliente_info("datos de " + t), i:"cliente_info", ok:true};
+  if (espera === "convertir" && nvMonto(raw)) return {r:NV_R.convertir(t, raw), i:"convertir", ok:true};
+  if (fq.f && fq.s > s) return {r:NV_R.faq(fq.f), i:"faq", ok:true};
+  if (!i && /\b(hoy|ayer|semana|mes)\b/.test(t)) i = ["ventas","pagos","top","gastos","ganancia","mejores_clientes"].indexOf(NV.last) > -1 ? NV.last : "ventas";
+  if (!i) { const q = nvResto(t); if (q && nvProductos(q).length && nvAprox(q, P, p => pname(p))[0].s >= .8) i = "stock"; else if (q && nvCliente(q).length && nvAprox(q, nvClientes(), c => c.nombre)[0].s >= .9) i = "cliente_info"; }
+  if (!i) return {r:{h:"Todavía no entiendo eso 🤔. Esto sí lo sé responder:" + '<br><span class="mu">Si es una pregunta de tus clientes, agrégala en la hoja Novi_FAQ.</span>', c:NV_MENU}, i:"", ok:false};
   NV.last = i;
-  return {r:NV_R[i](t, txt), i, ok:true};
+  return {r:NV_R[i](t, raw), i, ok:true};
 }
 
 /* ---------- Interfaz ---------- */
 function nvAdd(cls, html){ const m = document.createElement("div"); m.className = "nv-m " + cls; m.innerHTML = html; const box = $("nv_msgs"); box.appendChild(m); box.scrollTop = box.scrollHeight; }
 function nvChips(l){ $("nv_chips").innerHTML = (l || []).map(c => '<button type="button" data-nv="' + esc(c) + '">' + esc(c) + '</button>').join(""); }
-function nvEnviar(txt, escrito){
+async function nvEnviar(txt, escrito){
   txt = String(txt || "").trim(); if (!txt) return;
+  NV.act = Date.now();
   nvAdd("yo", esc(txt));
   const out = nvResponder(txt);
   if (!out) return;
-  setTimeout(() => { nvAdd("bot", out.r.h); nvChips(out.r.c); }, 180);
+  const r = await Promise.resolve(out.r);
+  setTimeout(() => { nvAdd("bot", r.h); nvChips(r.c); }, 160);
   if (escrito && !DEMO) api("novi_log", {texto:txt, intencion:out.i, entendio:out.ok}).catch(() => {});
 }
+function nvSaludar(){ const r = NV_R.inicio(); nvAdd("bot", r.h); nvChips(r.c); NV.started = true; NV.act = Date.now(); }
+function nvReiniciar(){ NV.started = false; NV.wait = null; NV.pend = null; NV.last = null; const b = $("nv_msgs"); if (b) b.innerHTML = ""; const c = $("nv_chips"); if (c) c.innerHTML = ""; if (NV.open) nvSaludar(); }
 function nvToggle(on){
   NV.open = on === undefined ? !NV.open : on;
   $("nv_win").classList.toggle("open", NV.open);
   const dot = $("nv_dot"); if (dot && NV.open) dot.style.display = "none";
   const tip = $("nv_tip"); if (tip) tip.remove();
   if (NV.open) {
-    if (!NV.started) { NV.started = true; const r = NV_R.inicio(); nvAdd("bot", r.h); nvChips(r.c); }
+    if (NV.started && Date.now() - NV.act > NV_INACTIVO) nvReiniciar();
+    if (!NV.started) {
+      nvSaludar();
+      if (!C.tasa_bcv_fecha || String(C.tasa_bcv_fecha) < hoyKey()) nvPedirBcv().then(j => { if (j && NV.open && nvTasaPendiente() && !NV.pend) { nvAdd("bot", nvAvisoTasa().replace(/^<br><br>/, "")); nvChips(NV_CH_TASA.concat(NV_MENU)); } });
+    }
     setTimeout(() => { const i = $("nv_q"); if (i && window.innerWidth > 520) i.focus(); }, 60);
-  }
+  } else if (NV.voz && NV.voz.on) NV.voz.rec.stop();
+}
+/* Dictado por voz del navegador (gratis, sin IA propia). Si el navegador no lo soporta, el botón no aparece. */
+function nvVozIniciar(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const b = $("nv_mic"); if (!SR || !b) return;
+  const rec = new SR(); rec.lang = "es-VE"; rec.interimResults = true; rec.maxAlternatives = 1; rec.continuous = false;
+  NV.voz = {rec, on:false, txt:""};
+  b.style.display = "";
+  rec.onresult = e => { let t = ""; for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript; NV.voz.txt = t; $("nv_q").value = t; };
+  rec.onend = () => { NV.voz.on = false; b.classList.remove("on"); const t = NV.voz.txt.trim(); NV.voz.txt = ""; if (t) { $("nv_q").value = ""; nvEnviar(t, true); } };
+  rec.onerror = e => { NV.voz.on = false; b.classList.remove("on"); if (e.error === "not-allowed" || e.error === "service-not-allowed") nvAdd("bot", "Necesito permiso para usar el micrófono. Actívalo en el candado de la barra de direcciones."); };
+  b.onclick = () => { if (NV.voz.on) { rec.stop(); return; } try { NV.voz.txt = ""; rec.start(); NV.voz.on = true; b.classList.add("on"); NV.act = Date.now(); } catch(e){} };
 }
 function nvMontar(){
   if ($("nv_fab")) return;
@@ -1047,26 +1315,47 @@ function nvMontar(){
   d.innerHTML = '<button class="nv-fab" id="nv_fab" type="button" aria-label="Abrir a Novi, tu asistente">' + NOVI_SVG() + '<span class="nv-dot" id="nv_dot"></span></button>' +
     '<section class="nv-win" id="nv_win" role="dialog" aria-label="Novi, asistente del panel"><div class="nv-hd">' + NOVI_SVG() + '<div><b>Novi</b><span>Asistente de tu negocio</span></div><button type="button" id="nv_x" aria-label="Cerrar">×</button></div>' +
     '<div class="nv-msgs" id="nv_msgs" aria-live="polite"></div><div class="nv-chips" id="nv_chips"></div>' +
-    '<form class="nv-in" id="nv_f"><input id="nv_q" autocomplete="off" placeholder="Escríbele a Novi…" aria-label="Mensaje para Novi" maxlength="200"><button>Enviar</button></form></section>';
+    '<form class="nv-in" id="nv_f"><button type="button" class="nv-mic" id="nv_mic" aria-label="Hablarle a Novi" title="Hablarle a Novi" style="display:none">🎤</button><input id="nv_q" autocomplete="off" placeholder="Escríbele a Novi…" aria-label="Mensaje para Novi" maxlength="200"><button class="nv-env">Enviar</button></form></section>';
   while (d.firstChild) document.body.appendChild(d.firstChild);
   $("nv_fab").onclick = () => nvToggle();
   $("nv_x").onclick = () => nvToggle(false);
   $("nv_chips").onclick = e => { const b = e.target.closest("[data-nv]"); if (b) nvEnviar(b.dataset.nv, false); };
   $("nv_f").onsubmit = e => { e.preventDefault(); const i = $("nv_q"); const v = i.value; i.value = ""; nvEnviar(v, true); };
+  $("nv_q").addEventListener("input", () => { NV.act = Date.now(); });
+  nvVozIniciar();
   let visto = false; try { visto = sessionStorage.getItem("nv_tip") === "1"; sessionStorage.setItem("nv_tip", "1"); } catch(e){}
   if (!visto) { const t = document.createElement("div"); t.className = "nv-tip"; t.id = "nv_tip"; t.textContent = "¡Yo! Soy Novi."; document.body.appendChild(t); setTimeout(() => { if (t.parentNode) t.remove(); }, 6000); }
 }
 function noviSync(){
   const on = isPanel() && admin && MOD("novi");
-  if (!on) { if ($("nv_fab")) { ["nv_fab","nv_win","nv_tip"].forEach(id => { const x = $(id); if (x) x.remove(); }); NV.open = false; NV.started = false; NV.wait = null; } return; }
+  if (!on) { if ($("nv_fab")) { if (NV.voz && NV.voz.on) NV.voz.rec.stop(); ["nv_fab","nv_win","nv_tip"].forEach(id => { const x = $(id); if (x) x.remove(); }); NV.open = false; NV.started = false; NV.wait = null; NV.pend = null; NV.voz = null; } return; }
   nvMontar();
-  const n = O.filter(o => o.estado === "Pendiente").length + P.filter(p => p.activo && p.stock <= 0).length, dot = $("nv_dot");
+  const n = O.filter(o => o.estado === "Pendiente").length + P.filter(p => p.activo && p.stock <= 0).length + (nvTasaPendiente() ? 1 : 0), dot = $("nv_dot");
   if (dot) { dot.textContent = n > 9 ? "9+" : n; dot.style.display = n && !NV.open ? "block" : "none"; }
 }
+/* 5 minutos sin escribir: se borra la conversación (si está abierta, arranca una nueva) */
+setInterval(() => { if (NV.started && Date.now() - NV.act > NV_INACTIVO) nvReiniciar(); }, 15000);
+
+/* ---------- Enganches con el panel ---------- */
 { const _panel = panel; panel = async function(){ const r = await _panel.apply(this, arguments); noviSync(); return r; }; }
+{ const _apply = apply; apply = function(j){ _apply(j); if (j && j.novi) nvCargarDatos(j.novi); }; }
 window.addEventListener("hashchange", noviSync);
 document.addEventListener("keydown", e => { if (e.key === "Escape" && NV.open) nvToggle(false); });
 
+/* ---------- Modo demo: imita las acciones nuevas del Apps Script ---------- */
+if (DEMO) {
+  const _local = local;
+  local = function(b){
+    if (b.action === "novi_log") return {ok:true};
+    if (b.action === "tasa_set") { dload(); const v = Number(b.tasa); if (!(v > 0)) throw new Error("Tasa inválida"); D.config.tasa = v; dsave(); return Object.assign(snap(), {novi:NOVI_DEMO}); }
+    if (b.action === "tasa_bcv") { dload(); const base = Number(D.config.tasa) || 1; if (!D.config.tasa_bcv || D.config.tasa_bcv_fecha !== hoyKey()) { D.config.tasa_bcv = Math.round(base * 1.0125 * 100) / 100; D.config.tasa_bcv_eur = Math.round(base * 1.0125 * 1.16 * 100) / 100; D.config.tasa_bcv_fecha = hoyKey(); dsave(); } return Object.assign(snap(), {novi:NOVI_DEMO}); }
+    const r = _local(b);
+    if (b.action === "load" && r) r.novi = NOVI_DEMO;
+    return r;
+  };
+}
+
+/* NOVI:JS:FIN */
 /* ============ INICIO ============ */
 (async function(){
   if (DEMO) dload();

@@ -1,0 +1,1222 @@
+[
+[
+"cuanto vendi hoy",
+"ventas"
+],
+[
+"Cuánto vendí hoy?",
+"ventas"
+],
+[
+"cuanto he vendido hoy",
+"ventas"
+],
+[
+"ventas de hoy",
+"ventas"
+],
+[
+"como van las ventas",
+"ventas"
+],
+[
+"como voy hoy",
+"ventas"
+],
+[
+"como vamos",
+"ventas"
+],
+[
+"cuanto llevo hoy",
+"ventas"
+],
+[
+"cuanto hice hoy",
+"ventas"
+],
+[
+"cuanto hicimos ayer",
+"ventas"
+],
+[
+"ventas de ayer",
+"ventas"
+],
+[
+"cuanto vendimos ayer",
+"ventas"
+],
+[
+"cuanto vendi esta semana",
+"ventas"
+],
+[
+"ventas de la semana",
+"ventas"
+],
+[
+"cuanto vendi este mes",
+"ventas"
+],
+[
+"como voy este mes",
+"ventas"
+],
+[
+"ventas del mes",
+"ventas"
+],
+[
+"ventas del mes pasado",
+"ventas"
+],
+[
+"cuanto vendi la semana pasada",
+"ventas"
+],
+[
+"cuanto entro hoy",
+"ventas"
+],
+[
+"cuanto ha entrado",
+"ventas"
+],
+[
+"cuanto cobre hoy",
+"ventas"
+],
+[
+"cobros de hoy",
+"ventas"
+],
+[
+"cuanto facture este mes",
+"ventas"
+],
+[
+"facturacion del mes",
+"ventas"
+],
+[
+"ingresos de hoy",
+"ventas"
+],
+[
+"dame el resumen",
+"ventas"
+],
+[
+"resumen de hoy",
+"ventas"
+],
+[
+"como va el negocio",
+"ventas"
+],
+[
+"como estamos",
+"ventas"
+],
+[
+"cuanta plata entro hoy",
+"ventas"
+],
+[
+"bentas de hoy",
+"ventas"
+],
+[
+"cuanto bendi hoy",
+"ventas"
+],
+[
+"cuanto vendi de franela",
+"ventas"
+],
+[
+"cuanto he vendido de franela basica esta semana",
+"ventas"
+],
+[
+"ventas de gorra este mes",
+"ventas"
+],
+[
+"CUANTO VENDI HOY",
+"ventas"
+],
+[
+"cuanto dinero hice ayer",
+"ventas"
+],
+[
+"movimiento de hoy",
+"ventas"
+],
+[
+"como fue el dia",
+"ventas"
+],
+[
+"ventas por forma de pago",
+"pagos"
+],
+[
+"como me pagaron hoy",
+"pagos"
+],
+[
+"cuanto entro por pago movil",
+"pagos"
+],
+[
+"cuanto me pagaron por zelle",
+"pagos"
+],
+[
+"cobros en efectivo de hoy",
+"pagos"
+],
+[
+"cuanto cobre en efectivo",
+"pagos"
+],
+[
+"por metodo de pago",
+"pagos"
+],
+[
+"pagos por transferencia esta semana",
+"pagos"
+],
+[
+"cuanto entro en divisas",
+"pagos"
+],
+[
+"cuanto fue por punto de venta",
+"pagos"
+],
+[
+"cuanto gane este mes",
+"ganancia"
+],
+[
+"ganancia del mes",
+"ganancia"
+],
+[
+"cual es mi ganancia",
+"ganancia"
+],
+[
+"utilidad del mes",
+"ganancia"
+],
+[
+"cuanto ganamos",
+"ganancia"
+],
+[
+"ganancia neta",
+"ganancia"
+],
+[
+"cuanto me queda libre",
+"ganancia"
+],
+[
+"margen de ganancia",
+"ganancia"
+],
+[
+"rentabilidad del mes",
+"ganancia"
+],
+[
+"cuanto gane la semana pasada",
+"ganancia"
+],
+[
+"ganancias de hoy",
+"ganancia"
+],
+[
+"beneficio del mes pasado",
+"ganancia"
+],
+[
+"cuanto gaste este mes",
+"gastos"
+],
+[
+"gastos del mes",
+"gastos"
+],
+[
+"en que gaste",
+"gastos"
+],
+[
+"gastos de hoy",
+"gastos"
+],
+[
+"cuanto he gastado",
+"gastos"
+],
+[
+"egresos del mes",
+"gastos"
+],
+[
+"gastos de la semana",
+"gastos"
+],
+[
+"cuanto gastamos el mes pasado",
+"gastos"
+],
+[
+"cierre de caja",
+"caja"
+],
+[
+"como esta la caja",
+"caja"
+],
+[
+"cuanto hay en caja",
+"caja"
+],
+[
+"cuadrar caja",
+"caja"
+],
+[
+"cuanto efectivo debe haber",
+"caja"
+],
+[
+"arqueo de caja",
+"caja"
+],
+[
+"hacer el cierre",
+"caja"
+],
+[
+"cuanto debe haber en caja",
+"caja"
+],
+[
+"plata en caja",
+"caja"
+],
+[
+"cerrar caja",
+"caja"
+],
+[
+"lo mas vendido",
+"top"
+],
+[
+"que es lo que mas se vende",
+"top"
+],
+[
+"productos mas vendidos",
+"top"
+],
+[
+"top 10",
+"top"
+],
+[
+"que vendo mas",
+"top"
+],
+[
+"lo que mas sale",
+"top"
+],
+[
+"productos estrella",
+"top"
+],
+[
+"mas vendidos del mes",
+"top"
+],
+[
+"lo mas vendido de la semana",
+"top"
+],
+[
+"ranking de productos",
+"top"
+],
+[
+"que se vende mas",
+"top"
+],
+[
+"lo menos vendido",
+"top"
+],
+[
+"productos menos vendidos",
+"top"
+],
+[
+"mas vendido del mes pasado",
+"top"
+],
+[
+"stock de franela",
+"stock"
+],
+[
+"cuanto queda de franela",
+"stock"
+],
+[
+"cuantas franelas quedan",
+"stock"
+],
+[
+"hay jean skinny",
+"stock"
+],
+[
+"tienes gorra",
+"stock"
+],
+[
+"cuantos jean mom quedan",
+"stock"
+],
+[
+"existencia de sandalias",
+"stock"
+],
+[
+"stock de vestido negro",
+"stock"
+],
+[
+"cuantas unidades de sudadera",
+"stock"
+],
+[
+"precio de la gorra",
+"stock"
+],
+[
+"cuanto cuesta el vestido floral",
+"stock"
+],
+[
+"busca camisa oxford",
+"stock"
+],
+[
+"cuantos tengo de chaqueta jean",
+"stock"
+],
+[
+"hay de colección navidad",
+"stock"
+],
+[
+"stock del jean",
+"stock"
+],
+[
+"disponible franela estampada",
+"stock"
+],
+[
+"stock de gorra clasica",
+"stock"
+],
+[
+"stock bajo",
+"bajos"
+],
+[
+"que esta bajo",
+"bajos"
+],
+[
+"productos agotados",
+"bajos"
+],
+[
+"que se acabo",
+"bajos"
+],
+[
+"que se esta acabando",
+"bajos"
+],
+[
+"que me falta",
+"bajos"
+],
+[
+"productos por agotarse",
+"bajos"
+],
+[
+"alertas de inventario",
+"bajos"
+],
+[
+"que esta agotado",
+"bajos"
+],
+[
+"inventario bajo",
+"bajos"
+],
+[
+"que tiene poco stock",
+"bajos"
+],
+[
+"productos sin stock",
+"bajos"
+],
+[
+"que quedan pocos",
+"bajos"
+],
+[
+"bajo el minimo",
+"bajos"
+],
+[
+"lista de compra",
+"compra"
+],
+[
+"que tengo que comprar",
+"compra"
+],
+[
+"que debo comprar",
+"compra"
+],
+[
+"que le pido al proveedor",
+"compra"
+],
+[
+"que hay que reponer",
+"compra"
+],
+[
+"que mercancia falta",
+"compra"
+],
+[
+"que necesito comprar",
+"compra"
+],
+[
+"hacer pedido de mercancia",
+"compra"
+],
+[
+"lista de compras para el proveedor",
+"compra"
+],
+[
+"que me falta comprar",
+"compra"
+],
+[
+"que surtir",
+"compra"
+],
+[
+"valor del inventario",
+"inventario"
+],
+[
+"cuanto vale mi inventario",
+"inventario"
+],
+[
+"cuanto tengo invertido",
+"inventario"
+],
+[
+"cuanto hay en mercancia",
+"inventario"
+],
+[
+"inventario total",
+"inventario"
+],
+[
+"capital en mercancia",
+"inventario"
+],
+[
+"cuanto vale la mercancia",
+"inventario"
+],
+[
+"quien me debe",
+"deben"
+],
+[
+"quienes me deben",
+"deben"
+],
+[
+"cuanto me deben",
+"deben"
+],
+[
+"deudores",
+"deben"
+],
+[
+"lista de deudores",
+"deben"
+],
+[
+"cuanto tengo por cobrar",
+"deben"
+],
+[
+"cuentas por cobrar",
+"deben"
+],
+[
+"creditos pendientes",
+"deben"
+],
+[
+"fiados",
+"deben"
+],
+[
+"cuanto me debe andrea",
+"deben"
+],
+[
+"cuanto debe andrea gomez",
+"deben"
+],
+[
+"plata en la calle",
+"deben"
+],
+[
+"saldo de andrea",
+"deben"
+],
+[
+"quien me debe plata",
+"deben"
+],
+[
+"lo que me deben",
+"deben"
+],
+[
+"fiao",
+"deben"
+],
+[
+"cuotas vencidas",
+"vencidas"
+],
+[
+"a quien le cobro hoy",
+"vencidas"
+],
+[
+"que cobro hoy",
+"vencidas"
+],
+[
+"cuotas de hoy",
+"vencidas"
+],
+[
+"pagos atrasados",
+"vencidas"
+],
+[
+"morosos",
+"vencidas"
+],
+[
+"quien esta atrasado",
+"vencidas"
+],
+[
+"cuotas que vencen hoy",
+"vencidas"
+],
+[
+"que cuotas vencen esta semana",
+"vencidas"
+],
+[
+"clientes morosos",
+"vencidas"
+],
+[
+"cuotas pendientes",
+"vencidas"
+],
+[
+"pedidos pendientes",
+"pendientes"
+],
+[
+"que pedidos tengo",
+"pendientes"
+],
+[
+"hay pedidos nuevos",
+"pendientes"
+],
+[
+"pedidos sin pagar",
+"pendientes"
+],
+[
+"llego algun pedido",
+"pendientes"
+],
+[
+"pedidos por confirmar",
+"pendientes"
+],
+[
+"pedidos de hoy",
+"pendientes"
+],
+[
+"ordenes pendientes",
+"pendientes"
+],
+[
+"que falta por atender",
+"pendientes"
+],
+[
+"pedidos sin confirmar",
+"pendientes"
+],
+[
+"pedido 1003",
+"pedido"
+],
+[
+"buscar ped-1003",
+"pedido"
+],
+[
+"PED-1010",
+"pedido"
+],
+[
+"ped 1012",
+"pedido"
+],
+[
+"como va el pedido 1005",
+"pedido"
+],
+[
+"nota 4",
+"pedido"
+],
+[
+"nota de entrega 12",
+"pedido"
+],
+[
+"orden 1003",
+"pedido"
+],
+[
+"pedido #1008",
+"pedido"
+],
+[
+"el pedido nro 1002",
+"pedido"
+],
+[
+"telefono de andrea",
+"cliente_info"
+],
+[
+"numero de andrea gomez",
+"cliente_info"
+],
+[
+"datos de andrea",
+"cliente_info"
+],
+[
+"que compro andrea",
+"cliente_info"
+],
+[
+"que ha comprado distribuidora demo",
+"cliente_info"
+],
+[
+"historial de andrea",
+"cliente_info"
+],
+[
+"whatsapp de andrea",
+"cliente_info"
+],
+[
+"direccion de andrea",
+"cliente_info"
+],
+[
+"info del cliente andrea",
+"cliente_info"
+],
+[
+"contacto de andrea",
+"cliente_info"
+],
+[
+"ficha de andrea gomez",
+"cliente_info"
+],
+[
+"busca al cliente andrea",
+"cliente_info"
+],
+[
+"mejores clientes",
+"mejores_clientes"
+],
+[
+"quien me compra mas",
+"mejores_clientes"
+],
+[
+"cual es mi mejor cliente",
+"mejores_clientes"
+],
+[
+"clientes que mas compran",
+"mejores_clientes"
+],
+[
+"top clientes",
+"mejores_clientes"
+],
+[
+"clientes frecuentes",
+"mejores_clientes"
+],
+[
+"mejores clientes del mes",
+"mejores_clientes"
+],
+[
+"quienes compran mas",
+"mejores_clientes"
+],
+[
+"clientes fieles",
+"mejores_clientes"
+],
+[
+"cual es mi mejor dia",
+"mejor_dia"
+],
+[
+"que dia vendo mas",
+"mejor_dia"
+],
+[
+"dia que mas vendo",
+"mejor_dia"
+],
+[
+"mejor dia de venta",
+"mejor_dia"
+],
+[
+"peor dia de la semana",
+"mejor_dia"
+],
+[
+"que dias vendo mas",
+"mejor_dia"
+],
+[
+"dias mas fuertes",
+"mejor_dia"
+],
+[
+"que dia se vende mas",
+"mejor_dia"
+],
+[
+"dia flojo",
+"mejor_dia"
+],
+[
+"a cuanto esta el dolar",
+"tasa"
+],
+[
+"tasa del dia",
+"tasa"
+],
+[
+"tasa bcv",
+"tasa"
+],
+[
+"cual es la tasa",
+"tasa"
+],
+[
+"a como esta el dolar hoy",
+"tasa"
+],
+[
+"precio del dolar",
+"tasa"
+],
+[
+"dolar hoy",
+"tasa"
+],
+[
+"tasa de hoy",
+"tasa"
+],
+[
+"actualizar tasa",
+"tasa"
+],
+[
+"cambiar la tasa",
+"tasa"
+],
+[
+"cuanto esta el euro",
+"tasa"
+],
+[
+"tasa oficial",
+"tasa"
+],
+[
+"como esta el dolar",
+"tasa"
+],
+[
+"cuanto son $20 en bs",
+"convertir"
+],
+[
+"20$ a bolivares",
+"convertir"
+],
+[
+"cuanto es 20 dolares en bs",
+"convertir"
+],
+[
+"convierte 500 bs a dolares",
+"convertir"
+],
+[
+"1000 bs en dolares",
+"convertir"
+],
+[
+"cuanto son 1.500,50 bs",
+"convertir"
+],
+[
+"pasame 35 dolares a bs",
+"convertir"
+],
+[
+"$15 en bolivares",
+"convertir"
+],
+[
+"cuanto es 50 verdes",
+"convertir"
+],
+[
+"cuanto serian 2000 bolos en dolares",
+"convertir"
+],
+[
+"calcula 12,5$ en bs",
+"convertir"
+],
+[
+"10 euros en bs",
+"convertir"
+],
+[
+"que hora es",
+"hora"
+],
+[
+"qué horas son",
+"hora"
+],
+[
+"dime la hora",
+"hora"
+],
+[
+"la hora",
+"hora"
+],
+[
+"que dia es hoy",
+"fecha"
+],
+[
+"que fecha es",
+"fecha"
+],
+[
+"fecha de hoy",
+"fecha"
+],
+[
+"en que dia estamos",
+"fecha"
+],
+[
+"a cuanto estamos",
+"fecha"
+],
+[
+"hola",
+"saludo"
+],
+[
+"buenas",
+"saludo"
+],
+[
+"buenos dias",
+"saludo"
+],
+[
+"buenas tardes",
+"saludo"
+],
+[
+"epa",
+"saludo"
+],
+[
+"hola novi",
+"saludo"
+],
+[
+"que tal",
+"saludo"
+],
+[
+"epale",
+"saludo"
+],
+[
+"chao",
+"despedida"
+],
+[
+"adios",
+"despedida"
+],
+[
+"hasta luego",
+"despedida"
+],
+[
+"nos vemos",
+"despedida"
+],
+[
+"bye",
+"despedida"
+],
+[
+"gracias",
+"gracias"
+],
+[
+"muchas gracias",
+"gracias"
+],
+[
+"perfecto",
+"gracias"
+],
+[
+"chevere",
+"gracias"
+],
+[
+"ok",
+"gracias"
+],
+[
+"listo gracias",
+"gracias"
+],
+[
+"excelente",
+"gracias"
+],
+[
+"menu",
+"menu"
+],
+[
+"ayuda",
+"menu"
+],
+[
+"que puedes hacer",
+"menu"
+],
+[
+"que sabes hacer",
+"menu"
+],
+[
+"opciones",
+"menu"
+],
+[
+"para que sirves",
+"menu"
+],
+[
+"no se que preguntar",
+"menu"
+],
+[
+"quien eres",
+"quien_eres"
+],
+[
+"como te llamas",
+"quien_eres"
+],
+[
+"eres una ia",
+"quien_eres"
+],
+[
+"eres un robot",
+"quien_eres"
+],
+[
+"quien te creo",
+"quien_eres"
+],
+[
+"eres humano",
+"quien_eres"
+],
+[
+"horario",
+"faq"
+],
+[
+"a que hora abren",
+"faq"
+],
+[
+"hacen delivery",
+"faq"
+],
+[
+"donde estan ubicados",
+"faq"
+],
+[
+"aceptan zelle",
+"faq"
+],
+[
+"tienen garantia",
+"faq"
+],
+[
+"puedo hacer cambios",
+"faq"
+],
+[
+"guia de tallas",
+"faq"
+],
+[
+"que talla soy",
+"faq"
+],
+[
+"envian a otra ciudad por mrw",
+"faq"
+],
+[
+"como lavar la prenda",
+"faq"
+],
+[
+"son originales",
+"faq"
+],
+[
+"el sabado van a estar los del gas?",
+"ninguna"
+],
+[
+"jajaja",
+"ninguna"
+],
+[
+"asdfgh",
+"ninguna"
+],
+[
+"que opinas de la politica",
+"ninguna"
+],
+[
+"cuentame un chiste",
+"ninguna"
+],
+[
+"va a llover manana",
+"ninguna"
+]
+]

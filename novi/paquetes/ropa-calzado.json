@@ -1,0 +1,22 @@
+{
+  "nombre": "ropa-calzado",
+  "titulo": "Ropa y calzado",
+  "preguntas": [
+    {"p": "Guía de tallas", "k": ["talla","tallas","guia de tallas","que talla","cual es mi talla","como se mi talla","tabla de tallas","medidas"], "r": "[EDITAR: Manejamos tallas S, M, L y XL. Si nos dices tu estatura y peso por WhatsApp al +{whatsapp}, te recomendamos la talla.]"},
+    {"p": "Tallas grandes", "k": ["tallas grandes","talla grande","plus size","xxl","2xl","3xl","talla extra"], "r": "[EDITAR: Tenemos algunos modelos hasta 2XL. Pregúntanos por el que te gustó.]"},
+    {"p": "Talla de calzado", "k": ["talla de zapato","numero de zapato","que numero","talla de calzado","numero de calzado","calzo"], "r": "[EDITAR: El calzado viene en tallas venezolanas del 35 al 44. Cada producto indica las tallas disponibles.]"},
+    {"p": "¿Talla exacta o grande?", "k": ["horma","viene grande","viene pequeno","talla exacta","talla normal","como horma","pido una mas"], "r": "[EDITAR: La mayoría de nuestros modelos son de talla exacta. Si alguno horma distinto, lo indicamos en la descripción.]"},
+    {"p": "Material y tela", "k": ["material","tela","algodon","de que es","licra","poliester","cuero","sintetico"], "r": "El material de cada prenda está en su descripción. [EDITAR: Si tienes dudas, escríbenos y te mandamos fotos de la etiqueta.]"},
+    {"p": "Colores", "k": ["colores","que colores","otro color","en negro","en blanco","viene en"], "r": "Los colores disponibles aparecen en cada producto. Si buscas uno que no ves, escríbenos al +{whatsapp}."},
+    {"p": "Cuidado y lavado", "k": ["como lavar","lavado","se encoge","destiñe","cuidado de la prenda","secadora","planchar"], "r": "[EDITAR: Recomendamos lavar a mano o en ciclo delicado con agua fría, sin secadora, para que la prenda dure más.]"},
+    {"p": "Cambio por talla", "k": ["cambio de talla","cambiar la talla","no me quedo","me quedo grande","me quedo pequeno","me quedo"], "r": "[EDITAR: Si no te quedó, la cambiamos por otra talla dentro de los 7 días, sin usar, con etiqueta y su nota de entrega.]"},
+    {"p": "Fotos reales", "k": ["fotos reales","como se ve puesto","foto real","mas fotos","video","se ve igual"], "r": "Sí, te mandamos fotos o video reales del producto por WhatsApp al +{whatsapp}."},
+    {"p": "Medirse en tienda", "k": ["probador","probarmelo","medirmelo","me lo puedo probar","probar"], "r": "[EDITAR: Sí, en la tienda puedes medirte las prendas antes de comprar.]"},
+    {"p": "¿Original o réplica?", "k": ["original","originales","replica","imitacion","son de marca","1.1"], "r": "[EDITAR: Todos nuestros productos son originales. / Indicamos en cada producto si es original o de fabricación nacional.]"},
+    {"p": "Nueva colección", "k": ["nueva coleccion","cuando llega mercancia","llego mercancia","novedades","lo nuevo","temporada"], "r": "[EDITAR: Recibimos mercancía nueva cada semana.] Síguenos en @{instagram} para ver lo último."},
+    {"p": "Ropa de niños", "k": ["ninos","nino","nina","ninas","infantil","bebe","para ninos"], "r": "[EDITAR: Por ahora solo manejamos ropa para dama y caballero.]"},
+    {"p": "Unisex", "k": ["unisex","para hombre","para mujer","dama","caballero"], "r": "Cada producto indica si es para dama, caballero o unisex. Si tienes dudas, pregúntanos."},
+    {"p": "Al mayor (ropa)", "k": ["docena","por docena","surtido","tallas surtidas","curva de tallas"], "r": "Al mayor vendemos desde {min_mayor} piezas, y puedes surtir tallas y colores. Escríbenos al +{whatsapp}."}
+  ],
+  "sinonimos": {"camiseta": "franela", "camisetas": "franelas", "remera": "franela", "playera": "franela", "jeans": "jean", "blue": "jean", "gomas": "zapatos", "tenis": "zapatos", "zapatillas": "zapatos", "cotizas": "sandalias", "chancletas": "sandalias", "short": "shorts", "mono": "pantalon", "suéter": "sueter", "hoodie": "sudadera"}
+}

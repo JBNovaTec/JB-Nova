@@ -1,0 +1,22 @@
+{
+  "nombre": "comida",
+  "titulo": "Comida / restaurante / comida rápida",
+  "preguntas": [
+    {"p": "Menú", "k": ["menu","la carta","que tienen","que venden","que hay de comer","que comida"], "r": "Todo nuestro menú está en esta página con precios en dólares y bolívares. [EDITAR: Si quieres, te mandamos la carta en imagen por WhatsApp.]"},
+    {"p": "Menú del día", "k": ["menu del dia","plato del dia","almuerzo","almuerzo del dia","especial del dia","ejecutivo"], "r": "[EDITAR: El menú del día cambia a diario. Lo publicamos cada mañana en @{instagram}.]"},
+    {"p": "Horario de cocina", "k": ["horario de cocina","hasta que hora cocinan","cocina abierta","a que hora sirven","hora de almuerzo","cenas"], "r": "[EDITAR: La cocina abre de 11:00 am a 10:00 pm.]"},
+    {"p": "Tiempo de preparación", "k": ["cuanto tarda","tiempo de preparacion","cuanto se tarda el pedido","demora la comida","cuanto falta"], "r": "[EDITAR: Los pedidos tardan entre 20 y 35 minutos, según la hora.]"},
+    {"p": "Costo del delivery", "k": ["costo del delivery","cuanto cobran de delivery","cuanto es el delivery","delivery gratis","zonas de delivery","hasta donde llegan"], "r": "[EDITAR: El delivery cuesta $1 en la zona cercana y $2 más lejos. Llegamos hasta ____.]"},
+    {"p": "Para llevar", "k": ["para llevar","pick up","lo paso buscando","retirar el pedido"], "r": "Sí, puedes pedir para llevar y retirarlo en el local. Te avisamos por WhatsApp cuando esté listo."},
+    {"p": "Ingredientes y alergias", "k": ["ingredientes","alergia","alergico","alergica","tiene mani","gluten","lactosa","que lleva"], "r": "[EDITAR: Los ingredientes principales están en la descripción de cada plato.] Si tienes una alergia, avísanos antes de pedir por WhatsApp al +{whatsapp} y te confirmamos qué puedes comer."},
+    {"p": "Vegetariano", "k": ["vegetariano","vegetariana","vegano","vegana","sin carne","opciones vegetarianas"], "r": "[EDITAR: Tenemos algunas opciones sin carne, marcadas en el menú.]"},
+    {"p": "Picante", "k": ["picante","pica","salsa picante","sin picante"], "r": "[EDITAR: Nuestros platos no pican; la salsa picante va aparte.]"},
+    {"p": "Porciones", "k": ["porcion","porciones","para cuantas personas","alcanza para","tamano","racion","raciones"], "r": "[EDITAR: Cada producto indica para cuántas personas alcanza.]"},
+    {"p": "Combos", "k": ["combo","combos","promo","promocion","con refresco","incluye bebida"], "r": "[EDITAR: Los combos incluyen bebida y acompañante. Están en la sección Combos.]"},
+    {"p": "Reservas", "k": ["reservar","reserva","reservacion","mesa","mesa para","cumpleanos"], "r": "[EDITAR: Para reservar una mesa escríbenos por WhatsApp al +{whatsapp} con fecha, hora y número de personas.]"},
+    {"p": "Eventos y catering", "k": ["evento","eventos","catering","fiesta","pedido grande","para una reunion","bandejas"], "r": "[EDITAR: Hacemos pedidos para eventos con 48 horas de anticipación.] Escríbenos al +{whatsapp}."},
+    {"p": "Pedido con anticipación", "k": ["pedir para mas tarde","programar pedido","para manana","con anticipacion","encargar"], "r": "[EDITAR: Sí, puedes dejar tu pedido programado para la hora que quieras.]"},
+    {"p": "Pagar al recibir", "k": ["pagar al recibir","pago contra entrega","pago en puerta","pagar cuando llegue"], "r": "[EDITAR: Puedes pagar en efectivo al recibir; por Pago Móvil, antes de despachar.]"}
+  ],
+  "sinonimos": {"burger": "hamburguesa", "burgers": "hamburguesas", "perros": "perro", "perrito": "perro", "pizzas": "pizza", "parrilla": "parrilla", "chicha": "chicha", "refresco": "bebida", "refrescos": "bebidas", "malta": "bebida", "jugo": "bebida", "jugos": "bebidas"}
+}

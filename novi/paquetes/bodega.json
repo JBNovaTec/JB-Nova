@@ -1,0 +1,21 @@
+{
+  "nombre": "bodega",
+  "titulo": "Bodega / víveres",
+  "preguntas": [
+    {"p": "¿Venden fiado?", "k": ["fian","venden fiado","fiado","me fian","anotar en la cuenta","cuenta abierta"], "r": "[EDITAR: Solo fiamos a clientes de confianza con cuenta abierta. Pregunta en la tienda.]"},
+    {"p": "Detallado / suelto", "k": ["detallado","suelto","por unidad","al detal","una sola","venden suelto","por pieza"], "r": "[EDITAR: Sí, vendemos al detal por unidad, y también por bulto o caja.]"},
+    {"p": "Por bulto o caja", "k": ["bulto","por bulto","caja","por caja","paca","fardo","por paca"], "r": "[EDITAR: Vendemos por bulto o caja con mejor precio.] Al mayor, desde {min_mayor} unidades en efectivo."},
+    {"p": "Vencimiento", "k": ["vencimiento","fecha de vencimiento","vencido","esta vencido","caduca"], "r": "[EDITAR: Revisamos las fechas de vencimiento todos los días. Si un producto te llega vencido, te lo cambiamos.]"},
+    {"p": "Charcutería por peso", "k": ["charcuteria","por peso","por kilo","medio kilo","cortan","rebanado","queso","jamon","fiambre"], "r": "[EDITAR: En charcutería vendemos por peso (desde 100 g) y te lo cortamos al momento.]"},
+    {"p": "Pan", "k": ["pan","pan fresco","a que hora llega el pan","canilla","pan dulce"], "r": "[EDITAR: El pan fresco llega todos los días a las 7:00 am y a las 4:00 pm.]"},
+    {"p": "Hielo y bebidas frías", "k": ["hielo","bolsa de hielo","bebidas frias","refresco frio","cerveza fria","frio"], "r": "[EDITAR: Sí, tenemos hielo y bebidas frías.]"},
+    {"p": "Gas", "k": ["gas","bombona","bombonas","recarga de gas"], "r": "[EDITAR: No vendemos gas.]"},
+    {"p": "Recargas", "k": ["recarga","recargas","saldo movistar","saldo digitel","saldo movilnet","recargar saldo"], "r": "[EDITAR: Hacemos recargas Movistar, Digitel y Movilnet.]"},
+    {"p": "Pago móvil en montos pequeños", "k": ["pago movil por poquito","monto pequeno","montos pequenos","pago movil minimo","minimo pago movil"], "r": "[EDITAR: Sí, aceptamos Pago Móvil desde cualquier monto.]"},
+    {"p": "Delivery mínimo", "k": ["minimo para delivery","delivery minimo","cuanto para delivery","desde cuanto hacen delivery"], "r": "[EDITAR: El delivery es gratis desde $15 de compra en la zona; si no, cuesta $1.]"},
+    {"p": "Bolsas", "k": ["bolsa","bolsas","traer bolsa","cobran la bolsa"], "r": "[EDITAR: Las bolsas no tienen costo adicional.]"},
+    {"p": "Productos importados", "k": ["importado","importados","de afuera","americano","colombiano"], "r": "[EDITAR: Tenemos productos nacionales e importados; lo indicamos en cada producto.]"},
+    {"p": "Precio del día", "k": ["precio del dia","cambio el precio","subio","subieron","por que subio"], "r": "Los precios en dólares se mantienen; en bolívares cambian con la tasa BCV del día ({tasa} Bs/$ hoy)."}
+  ],
+  "sinonimos": {"pote": "frasco", "potes": "frascos", "chucherias": "golosinas", "chuches": "golosinas", "refrescos": "refresco", "frescolita": "refresco", "harinapan": "harina pan", "caraota": "caraotas", "aceite": "aceite", "arepa": "harina", "papel": "papel higienico", "toallin": "papel", "jabon": "jabon"}
+}

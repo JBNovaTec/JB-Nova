@@ -1,0 +1,22 @@
+{
+  "nombre": "suplementos",
+  "titulo": "Suplementos deportivos",
+  "notas": "Las respuestas sobre uso remiten siempre a la etiqueta y a un profesional de salud: Novi no da dosis ni recomendaciones médicas.",
+  "preguntas": [
+    {"p": "¿Son originales?", "k": ["original","originales","sellado","sellados","replica","son de verdad","importado","importados"], "r": "[EDITAR: Todos nuestros productos son originales, importados y sellados de fábrica.]"},
+    {"p": "Vencimiento", "k": ["vencimiento","fecha de vencimiento","cuando vence","caduca","esta vigente"], "r": "Todos los productos tienen su fecha de vencimiento en el envase. [EDITAR: Si quieres, te enviamos una foto antes de comprar.]"},
+    {"p": "Cómo se toma", "k": ["como se toma","como tomar","cuanto tomar","dosis","cuantas veces","cuando tomar","antes o despues"], "r": "La forma de uso y la porción recomendada están en la etiqueta de cada producto. Para tu caso particular, consulta a tu médico o nutricionista."},
+    {"p": "¿Con agua o con leche?", "k": ["con agua o con leche","con leche","con agua","con que se mezcla","se mezcla","batido"], "r": "La etiqueta indica con qué se prepara. Con agua suele quedar más ligero y con leche más cremoso."},
+    {"p": "Proteína: whey o isolate", "k": ["whey o isolate","isolate","aislada","diferencia entre","cual proteina","que proteina me recomiendas","concentrada"], "r": "En general, la isolate (aislada) tiene más proteína por porción y menos lactosa, y la concentrada suele ser más económica. Si tienes dudas por tu salud o tu objetivo, consulta a un nutricionista."},
+    {"p": "Creatina para empezar", "k": ["creatina","para empezar","principiante","primera vez","que compro para empezar"], "r": "Cada producto trae su modo de uso en la etiqueta. Si es tu primera vez con suplementos, lo ideal es consultarlo con un profesional de salud. Con gusto te mostramos las opciones que tenemos."},
+    {"p": "Sabores", "k": ["sabores","que sabor","sabor","chocolate","vainilla","fresa","sin sabor"], "r": "Los sabores disponibles aparecen en cada producto. Si buscas uno que no ves, escríbenos al +{whatsapp}."},
+    {"p": "Servicios por envase", "k": ["servicios","porciones","cuantos servicios","cuanto dura","para cuanto alcanza","cuantas porciones"], "r": "La cantidad de servicios de cada envase está en su descripción y en la etiqueta."},
+    {"p": "Tamaños", "k": ["2 libras","5 libras","lb","libras","tamano","presentacion","presentaciones","mas grande"], "r": "Cada producto muestra sus presentaciones disponibles. Normalmente la más grande sale más económica por servicio."},
+    {"p": "Contraindicaciones", "k": ["contraindicaciones","efectos secundarios","es malo","hace dano","embarazada","hipertenso","diabetico","rinones"], "r": "Si tienes alguna condición de salud, estás embarazada o tomas medicamentos, consulta a tu médico antes de usar cualquier suplemento. No podemos dar recomendaciones médicas."},
+    {"p": "Para bajar de peso", "k": ["bajar de peso","quemador","quemadores","adelgazar","perder grasa","definir"], "r": "Tenemos productos para acompañar un plan de alimentación y entrenamiento. Antes de usar quemadores, consulta a un profesional de salud."},
+    {"p": "Para ganar masa", "k": ["ganar masa","ganar peso","aumentar","volumen","ganador","gainer","subir de peso"], "r": "Tenemos ganadores de peso y proteínas. Te ayudamos a comparar opciones por WhatsApp al +{whatsapp}; para tu caso particular, consulta a un nutricionista."},
+    {"p": "Asesoría", "k": ["asesoria","asesor","me puedes asesorar","que me recomiendas","recomendacion","rutina"], "r": "Te ayudamos a comparar productos por WhatsApp al +{whatsapp}. Para un plan de alimentación o de suplementación a tu medida, lo ideal es un nutricionista."},
+    {"p": "Envío cuidado", "k": ["llega bien","se rompe","embalaje","bien empacado","sellado al llegar"], "r": "[EDITAR: Enviamos todo bien embalado y con el sello de seguridad intacto.]"}
+  ],
+  "sinonimos": {"prote": "proteina", "protes": "proteinas", "proteínas": "proteinas", "crea": "creatina", "pre": "preentreno", "pre-entreno": "preentreno", "pre entreno": "preentreno", "ganador": "ganador", "gainer": "ganador", "bcaas": "bcaa", "aminos": "aminoacidos", "quema": "quemador", "colageno": "colageno"}
+}

@@ -1,0 +1,39 @@
+/* ============ NOVI · asistente del panel ============ */
+.nv-fab{position:fixed;right:14px;bottom:calc(70px + env(safe-area-inset-bottom,0px));z-index:60;width:66px;height:66px;border:0;padding:0;background:none;cursor:pointer;filter:drop-shadow(0 6px 14px #1d4ed866);transition:transform .2s}
+.nv-fab:hover{transform:translateY(-2px) scale(1.04)}
+.nv-fab svg{width:100%;height:100%;display:block}
+.nv-fab .nv-dot{position:absolute;top:6px;right:4px;min-width:18px;height:18px;border-radius:99px;background:var(--er);color:#fff;font:700 11px/18px var(--bf);padding:0 5px;text-align:center;display:none}
+.nv-tip{position:fixed;right:88px;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:60;background:#fff;color:#0b1633;border-radius:12px;padding:7px 12px;font:800 16px var(--hd);letter-spacing:.02em;box-shadow:0 6px 18px #0004;pointer-events:none;animation:nvIn .3s ease-out}
+.nv-tip:after{content:"";position:absolute;right:-7px;bottom:12px;border:7px solid transparent;border-right:0;border-left-color:#fff}
+.nv-eye{transform-box:fill-box;transform-origin:center;animation:nvBlink 5s infinite}
+@keyframes nvBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.15)}}
+@keyframes nvIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.nv-win{position:fixed;right:14px;bottom:calc(144px + env(safe-area-inset-bottom,0px));z-index:61;width:min(390px,calc(100vw - 28px));height:min(580px,calc(100vh - 190px));background:var(--sf);color:var(--tx);border:1px solid var(--bd);border-radius:18px;box-shadow:0 18px 50px #0006;display:none;flex-direction:column;overflow:hidden;animation:nvIn .25s ease-out}
+.nv-win.open{display:flex}
+.nv-hd{display:flex;align-items:center;gap:10px;padding:10px 12px;background:linear-gradient(135deg,#1d4ed8,#071c51);color:#fff}
+.nv-hd svg{width:38px;height:38px;flex-shrink:0}
+.nv-hd b{font:800 22px/1 var(--hd);letter-spacing:.03em;display:block}
+.nv-hd span{font-size:12px;opacity:.8}
+.nv-hd button{margin-left:auto;background:#ffffff1f;border:0;color:#fff;border-radius:9px;width:32px;height:32px;font-size:18px;cursor:pointer}
+.nv-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.nv-m{max-width:88%;padding:9px 12px;border-radius:14px;font-size:14px;line-height:1.45;animation:nvIn .2s ease-out;overflow-wrap:anywhere}
+.nv-m.bot{background:var(--sf);border:1px solid var(--bd);border-bottom-left-radius:4px;align-self:flex-start}
+.nv-m.yo{background:#1d4ed8;color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
+.nv-m .ln{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dashed var(--bd)}
+.nv-m .ln:last-child{border-bottom:0}
+.nv-m .big{font:800 26px/1.1 var(--hd)}
+.nv-m .mu{color:var(--mt);font-size:12px}
+.nv-m .up{color:var(--ok);font-weight:700}.nv-m .dn{color:var(--er);font-weight:700}
+.nv-chips{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;border-top:1px solid var(--bd);background:var(--sf);max-height:96px;overflow-y:auto}
+.nv-chips button{border:1px solid #1d4ed855;background:#1d4ed814;color:var(--tx);border-radius:99px;padding:6px 11px;font-size:13px;cursor:pointer}
+.nv-chips button:hover{background:#1d4ed82e}
+.nv-in{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--bd);background:var(--sf)}
+.nv-in input{flex:1;border:1px solid var(--bd);border-radius:10px;padding:9px 11px;background:var(--bg);min-width:0}
+.nv-in button{border:0;border-radius:10px;background:#1d4ed8;color:#fff;font-weight:700;padding:0 14px;cursor:pointer}
+@media (max-width:520px){.nv-win{left:8px;right:8px;width:auto;bottom:calc(140px + env(safe-area-inset-bottom,0px));height:calc(100vh - 200px)}.nv-fab{width:58px;height:58px}.nv-tip{right:78px;bottom:calc(90px + env(safe-area-inset-bottom,0px))}}
+@media print{.nv-fab,.nv-win,.nv-tip{display:none!important}}
+.nv-in .nv-mic{background:var(--sf2);color:var(--tx);padding:0 11px;font-size:17px}
+.nv-in .nv-mic.on{background:var(--er);color:#fff;animation:nvPulse 1s infinite}
+@keyframes nvPulse{50%{box-shadow:0 0 0 6px #d93a3a33}}
+.nv-m a.nv-wa{display:inline-block;margin-top:8px;background:#13a05a;color:#fff;border-radius:9px;padding:6px 12px;text-decoration:none;font-weight:700;font-size:13px}
+.nv-m mark{background:#ffd54a;color:#10141c;border-radius:4px;padding:0 3px}
