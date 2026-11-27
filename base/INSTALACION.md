@@ -11,7 +11,7 @@ Tiempo estimado: 10–15 minutos si ya tenés los datos del cliente (probado en 
 ## 1. Backend (Google Sheets + Apps Script)
 1. Crear una planilla nueva de Google Sheets con el nombre del cliente.
 2. Extensiones → Apps Script. Borrar lo que haya y pegar todo `02-backend/Code.gs`. Guardar.
-3. Elegir la función `setup` y tocar **Ejecutar**. Aceptar los permisos (Configuración avanzada → Ir al proyecto → Permitir). Crea las hojas (Productos, Pedidos, Clientes, Agenda, Gastos, Cierres, Config, Resumen) y 4 productos de ejemplo. Debe terminar con "Se completó la ejecución" y sin errores.
+3. Elegir la función `setup` y tocar **Ejecutar**. Aceptar los permisos (Configuración avanzada → Ir al proyecto → Permitir). Crea las hojas (Productos, Pedidos, Clientes, Agenda, Gastos, Cierres, Config, Novi_Log, Resumen) y 4 productos de ejemplo. Debe terminar con "Se completó la ejecución" y sin errores.
 4. (Recomendado) Configuración del proyecto → Propiedades del script → agregar `MASTER_KEY` con la clave maestra de JB NOVA. Así la clave nunca queda escrita en el código.
 5. Implementar → Nueva implementación → tipo **Aplicación web** · Ejecutar como: **Yo** · Quién tiene acceso: **Cualquier persona**. Copiar la URL que termina en `/exec`.
 
@@ -25,7 +25,7 @@ Entrar a `tu-sitio/#panel` con la clave `1234` y, en **Ajustes**:
 1. Cambiar la clave del panel.
 2. Datos del negocio: nombre, razón social, RIF, correo, Instagram, TikTok, frase corta, ciudad, color principal y link del logo para la nota (imagen subida a Drive y compartida, o cualquier link directo).
 3. Tasa del día, WhatsApp, formas de entrega y de pago.
-4. **Módulos activos**: tienda en línea, catálogo mayorista, ventas a crédito con cuotas, productos con sabores. Se activa solo lo que el cliente contrató.
+4. **Módulos activos**: tienda en línea, catálogo mayorista, ventas a crédito con cuotas, productos con sabores y Novi (asistente del panel). Se activa solo lo que el cliente contrató.
 5. En Inventario, borrar los productos de ejemplo y cargar los reales.
 
 ## 4. Pruebas antes de entregar
@@ -37,10 +37,30 @@ Entrar a `tu-sitio/#panel` con la clave `1234` y, en **Ajustes**:
 - **Cambia**: Ajustes del panel, logos, URL del backend, productos.
 - **No cambia**: el código. Si hay que arreglar o mejorar algo, se hace en esta base y luego se actualiza cada instalación (pegar `Code.gs` nuevo y crear una versión nueva de la implementación; reemplazar `index.html` conservando su `API_URL`).
 
+## Novi (asistente del panel)
+- Botón azul del robot abajo a la derecha, solo dentro del panel (después del PIN). Se apaga en Ajustes → Módulos activos.
+- Fase 1: solo consulta (ventas, caja, lo más vendido, stock, stock bajo, lista de compra, valor del inventario, quién debe, cuotas vencidas, pedidos pendientes, gastos y ganancia). No cambia ningún dato.
+- Funciona con reglas y palabras clave, sin IA: costo $0 por mensaje y responde con las mismas cuentas del panel.
+- Lo que el dueño escribe queda en la hoja **Novi_Log** (texto, intención, si entendió). Revisarla cada semana para agregar sinónimos a lo que no entendió.
+
+## Actualizar una instalación que ya existe
+1. Pegar el `Code.gs` nuevo, guardar y ejecutar **`setup`** una vez (no borra datos: agrega la hoja Novi_Log y los colores nuevos).
+2. Implementar → Administrar implementaciones → lápiz → **Nueva versión**.
+3. Reemplazar `index.html` y `mayorista/index.html` conservando su `API_URL`.
+4. Los usuarios del panel tienen que volver a entrar con su PIN una vez.
+
 ## Cómo verificar el backend antes de la web
 Con la URL `/exec` (desde el navegador o una herramienta) se puede probar enviando un POST de texto con `{"action":"catalog"}`: debe devolver `ok:true` con los 4 productos. La acción del panel para cargar todo es `load` con el campo `pin`.
 
-## Historial de correcciones de esta versión
+## Historial de correcciones
+### Versión con Novi (fase 1)
+- Nuevo: Novi en el panel (consultas) y módulo `mod_novi`.
+- Seguridad: el panel usa una sesión de 6 horas después del PIN. Si alguien prueba PIN falsos, solo se bloquean las entradas nuevas por 10 minutos; quien ya está adentro sigue trabajando. La clave maestra nunca queda bloqueada. Cambiar la clave cierra todas las sesiones.
+- Seguridad: límite de pedidos desde la tienda (12 por minuto en total y 3 cada 10 minutos por teléfono). Los pedidos cargados desde el panel no tienen límite.
+- La franja de la nota de entrega (PDF y vista del panel) usa el color del negocio configurado en Ajustes.
+- La hoja Pedidos ahora colorea el estado "Crédito".
+
+### Versión anterior
 - Corregido: `setup` fallaba por falta del formato de la hoja Agenda.
 - Cambiado: el prefijo de código de producto ahora es `P-` (antes tenía el de otro cliente).
 - Probado: catálogo, pedido con nota PDF y marca, PIN incorrecto rechazado, mayorista solo efectivo, gasto y cierre de caja con fondo inicial.

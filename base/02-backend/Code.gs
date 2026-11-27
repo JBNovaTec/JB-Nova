@@ -12,6 +12,8 @@
  * 4) Para cambiar el PIN del panel: editá NUEVO_PIN acá abajo y ejecutá la función "cambiarPin".
  *
  * Cada vez que cambies este código: Implementar > Administrar implementaciones > Editar > Nueva versión.
+ * Si la planilla ya existía, ejecutá "setup" una vez después de actualizar: agrega la hoja Novi_Log y los colores nuevos
+ * (no borra datos).
  */
 
 const PIN_INICIAL = "1234";
@@ -27,10 +29,11 @@ const HOJAS = {
   Agenda: ["id", "nombre", "telefono", "direccion", "notas", "fecha"],
   Gastos: ["id", "fecha", "categoria", "descripcion", "monto", "pago"],
   Cierres: ["fecha", "ventas", "gastos", "efectivo_esperado", "efectivo_contado", "diferencia", "notas", "fondo", "cobros_efectivo", "gastos_efectivo"],
-  Config: ["clave", "valor"]
+  Config: ["clave", "valor"],
+  Novi_Log: ["fecha", "texto", "intencion", "entendio"]
 };
 // Columnas que se guardan como texto (evita que Sheets convierta fechas o teléfonos)
-const TEXTO = ["sabor", "fecha", "fecha_pago", "telefono", "items", "imagenes", "descripcion", "especificaciones", "cliente", "direccion", "notas", "valor", "id_texto", "marca", "email", "nota_url", "codigo", "tipo", "nombre", "pagos", "venc", "credito"];
+const TEXTO = ["sabor", "fecha", "fecha_pago", "telefono", "items", "imagenes", "descripcion", "especificaciones", "cliente", "direccion", "notas", "valor", "id_texto", "marca", "email", "nota_url", "codigo", "tipo", "nombre", "pagos", "venc", "credito", "texto", "intencion", "entendio"];
 
 /* ================= SETUP ================= */
 function setup() {
@@ -55,7 +58,7 @@ function setup() {
       entregas: "Entrega personal, Delivery, Envío nacional",
       pagos: "Efectivo $, Zelle, Pago Móvil, Transferencia",
       legal: "", rif: "", correo: "", instagram: "", tiktok: "", lema: "", ciudad: "", color: "#0a86b8", logo_url: "",
-      mod_tienda: "SI", mod_mayorista: "SI", mod_credito: "SI", mod_sabores: "SI",
+      mod_tienda: "SI", mod_mayorista: "SI", mod_credito: "SI", mod_sabores: "SI", mod_novi: "SI",
       sitio: "", min_mayor: "5", nota_siguiente: String(NOTA_INICIAL)
     };
     Object.keys(cfg).forEach(function (k) { agregar_("Config", {clave: k, valor: cfg[k]}); });
@@ -76,7 +79,7 @@ function cargarCatalogo_() {
   });
   sh.getRange(2, 1, out.length, cols.length).setValues(out);
 }
-function cambiarPin() { PropertiesService.getScriptProperties().setProperty("ADMIN_PIN", String(NUEVO_PIN)); }
+function cambiarPin() { PropertiesService.getScriptProperties().setProperty("ADMIN_PIN", String(NUEVO_PIN)); cerrarSesiones_(); }
 
 /* ================= ENTRADA HTTP ================= */
 function doGet() { return salida_({ok: true, mensaje: "API activa"}); }
@@ -86,13 +89,17 @@ function doPost(e) {
     const req = JSON.parse(e.postData.contents);
     const a = req.action;
     if (a === "catalog") return salida_(catalogo_(req.mayor === true));
-    if (a === "order") { const res = conLock_(function () { return pedido_(req); }); cacheLimpiar_(); return salida_(res); }
-    verificarPin_(req.pin);
-    if (a === "order_del" || a === "product_del" || a === "credit_pay_del" || a === "cust_del") verificarPin_(req.clave);
+    if (a === "order") {
+      const res = conLock_(function () { if (!sesionOk_(req.pin)) limitePedidos_(req); return pedido_(req); });
+      cacheLimpiar_(); return salida_(res);
+    }
+    const conClave = verificarPin_(req.pin, true);
+    if (a === "order_del" || a === "product_del" || a === "credit_pay_del" || a === "cust_del") verificarPin_(req.clave, false);
     if (a === "pulse") return salida_(Object.assign({ok: true}, ultimoPedido_()));
+    if (a === "novi_log") return salida_(conLock_(function () { return noviLog_(req); }));
     const fn = ADMIN[a];
     if (!fn) throw new Error("Acción desconocida");
-    if (a === "load") return salida_(estado_());
+    if (a === "load") { const est = estado_(); if (conClave) est.token = nuevoToken_(); return salida_(est); }
     const out = conLock_(function () { return fn(req); }); cacheLimpiar_();
     return salida_(out);
   } catch (err) {
@@ -220,7 +227,8 @@ const ADMIN = {
     if (n.length < 4) throw new Error("La clave nueva debe tener al menos 4 caracteres");
     if (claveMaestra_() && n === claveMaestra_()) throw new Error("Elegí otra clave");
     PropertiesService.getScriptProperties().setProperty("ADMIN_PIN", n);
-    return estado_();
+    cerrarSesiones_();
+    return Object.assign(estado_(), {token: nuevoToken_()});
   },
   product_save: function (r) {
     const p = r.product;
@@ -289,7 +297,7 @@ const ADMIN = {
       min_mayor: String(Math.max(1, Math.floor(Number(c.min_mayor)) || 5))
     };
     ["legal", "rif", "correo", "instagram", "tiktok", "lema", "ciudad", "color", "logo_url"].forEach(function (k) { if (c[k] !== undefined) nuevo[k] = txt_(c[k], 300); });
-    ["mod_tienda", "mod_mayorista", "mod_credito", "mod_sabores"].forEach(function (k) { if (c[k] !== undefined) nuevo[k] = c[k] === "NO" ? "NO" : "SI"; });
+    ["mod_tienda", "mod_mayorista", "mod_credito", "mod_sabores", "mod_novi"].forEach(function (k) { if (c[k] !== undefined) nuevo[k] = c[k] === "NO" ? "NO" : "SI"; });
     if (c.codigos) {
       const sh = hoja_("Clientes"), ult = sh.getLastRow();
       if (ult > 1) sh.getRange(2, 1, ult - 1, HOJAS.Clientes.length).clearContent();
@@ -490,9 +498,10 @@ function notaPdf_(o, items, bs) {
     return '<tr><td style="padding:7px;border-bottom:1px solid #ccd">' + esc_(i.n) + (i.m ? '<br><span style="font-size:10px;color:#5b6575">Marca: ' + esc_(i.m) + '</span>' : '') + '</td><td align="right" style="padding:7px;border-bottom:1px solid #ccd">' + i.q + '</td><td align="right" style="padding:7px;border-bottom:1px solid #ccd">' + m2_(i.p) + ' $</td><td align="right" style="padding:7px;border-bottom:1px solid #ccd">' + m2_(i.p * i.q) + ' $</td></tr>';
   }).join("");
   const logo = logoHtml_(cfg);
+  const colorMarca = /^#[0-9a-f]{6}$/i.test(String(cfg.color || "")) ? cfg.color : "#00a5d6";
   const html = '<html><body style="font-family:Arial,sans-serif;font-size:12px;color:#10141c">' +
     '<table width="100%"><tr><td>' + logo + '</td><td align="right" style="font-size:11px"><b style="font-size:14px">' + esc_(cfg.legal || cfg.negocio) + '</b><br>Rif: ' + esc_(cfg.rif) + '<br>' + esc_(cfg.correo) + '<br>+' + esc_(cfg.whatsapp) + '<br>IG: @' + esc_(cfg.instagram) + '</td></tr></table>' +
-    '<div style="background:#00a5d6;color:#fff;text-align:center;padding:4px;margin-top:6px;font-size:10px;letter-spacing:1px">' + esc_(cfg.lema) + '</div>' +
+    '<div style="background:' + colorMarca + ';color:#fff;text-align:center;padding:4px;margin-top:6px;font-size:10px;letter-spacing:1px">' + esc_(cfg.lema) + '</div>' +
     '<h2 style="text-align:center;letter-spacing:2px;margin:18px 0">NOTA DE ENTREGA</h2>' +
     '<table width="100%"><tr><td><b>Para</b><br>' + esc_(o.cliente) + '<br>' + esc_(o.telefono) + '</td><td align="right"><b>Nota de entrega #</b> ' + o.nota + '<br><b>Fecha</b> ' + fecha + '<br><b>Tipo</b> ' + esc_(o.tipo) + '</td></tr></table><br>' +
     '<table width="100%" cellspacing="0"><tr style="background:#071c51;color:#fff"><th align="left" style="padding:7px">Artículo</th><th align="right" style="padding:7px">Cantidad</th><th align="right" style="padding:7px">Precio</th><th align="right" style="padding:7px">Importe</th></tr>' + filas + '</table><br>' +
@@ -523,7 +532,7 @@ function config_() {
   const lista = function (s) { return String(s || "").split(",").map(function (x) { return x.trim(); }).filter(Boolean); };
   return {negocio: c.negocio || "Tienda", intro: c.intro || "", titulo: c.titulo || "", tasa: Number(c.tasa) || 1, whatsapp: String(c.whatsapp || ""), entregas: lista(c.entregas), pagos: lista(c.pagos),
     rif: c.rif || "", correo: c.correo || "", instagram: c.instagram || "", sitio: c.sitio || "", legal: c.legal || "", tiktok: c.tiktok || "", lema: c.lema || "", ciudad: c.ciudad || "", color: c.color || "#0a86b8", logo_url: c.logo_url || "",
-    mod_tienda: c.mod_tienda || "SI", mod_mayorista: c.mod_mayorista || "SI", mod_credito: c.mod_credito || "SI", mod_sabores: c.mod_sabores || "SI", notas_publicas: c.notas_publicas || "SI", min_mayor: Math.max(1, Number(c.min_mayor) || 5)};
+    mod_tienda: c.mod_tienda || "SI", mod_mayorista: c.mod_mayorista || "SI", mod_credito: c.mod_credito || "SI", mod_sabores: c.mod_sabores || "SI", mod_novi: c.mod_novi || "SI", notas_publicas: c.notas_publicas || "SI", min_mayor: Math.max(1, Number(c.min_mayor) || 5)};
 }
 
 /* ================= UTILIDADES ================= */
@@ -533,14 +542,62 @@ function pinOk_(pin) {
   const p = String(pin || "");
   return (claveMaestra_() !== "" && p === claveMaestra_()) || p === String(PropertiesService.getScriptProperties().getProperty("ADMIN_PIN"));
 }
-function verificarPin_(pin) {
+// Devuelve true si entró con la clave (PIN o maestra) y false si entró con una sesión ya abierta.
+// Las sesiones abiertas no se bloquean por intentos fallidos de terceros: el bloqueo solo frena entradas nuevas.
+function verificarPin_(pin, aceptaSesion) {
+  if (aceptaSesion && sesionOk_(pin)) return false;
+  if (String(pin || "").indexOf("s.") === 0) throw new Error("Tu sesión venció. Vuelve a entrar con tu PIN.");
   const cache = CacheService.getScriptCache();
+  const esMaestra = claveMaestra_() !== "" && String(pin || "") === claveMaestra_();
   const fallos = Number(cache.get("fallos") || 0);
-  if (fallos >= 10) throw new Error("Demasiados intentos. Esperá unos minutos.");
+  if (fallos >= 10 && !esMaestra) throw new Error("Demasiados intentos. Espera unos minutos.");
   if (!pinOk_(pin)) {
     cache.put("fallos", String(fallos + 1), 600);
     throw new Error("PIN incorrecto");
   }
+  if (fallos) cache.remove("fallos");
+  return true;
+}
+// Sesión del panel: token aleatorio que dura 6 horas desde el último uso. Cambiar la clave cierra todas.
+function generacion_() { return String(PropertiesService.getScriptProperties().getProperty("SESION_GEN") || "1"); }
+function nuevoToken_() {
+  const t = "s." + Utilities.getUuid().replace(/-/g, "") + Utilities.getUuid().replace(/-/g, "");
+  CacheService.getScriptCache().put("tk_" + t, generacion_(), 21600);
+  return t;
+}
+function sesionOk_(t) {
+  t = String(t || "");
+  if (t.indexOf("s.") !== 0 || t.length > 80) return false;
+  const cache = CacheService.getScriptCache(), g = cache.get("tk_" + t);
+  if (!g || g !== generacion_()) return false;
+  cache.put("tk_" + t, g, 21600);
+  return true;
+}
+function cerrarSesiones_() {
+  const props = PropertiesService.getScriptProperties();
+  props.setProperty("SESION_GEN", String(Number(props.getProperty("SESION_GEN") || "1") + 1));
+}
+// Freno a pedidos en masa desde la tienda: máx. 12 por minuto en total y 3 cada 10 minutos por teléfono.
+// Los pedidos que carga el dueño desde el panel no tienen límite.
+function limitePedidos_(r) {
+  const cache = CacheService.getScriptCache(), min = "om_" + Math.floor(Date.now() / 60000);
+  const n = Number(cache.get(min) || 0);
+  if (n >= 12) throw new Error("Estamos recibiendo muchos pedidos. Espera un minuto o escríbenos por WhatsApp.");
+  cache.put(min, String(n + 1), 120);
+  const tel = String(r.telefono || "").replace(/\D/g, "").slice(-8);
+  if (tel.length >= 7) {
+    const k = "ot_" + tel, m = Number(cache.get(k) || 0);
+    if (m >= 3) throw new Error("Ya recibimos varios pedidos de este teléfono. Escríbenos por WhatsApp para ayudarte.");
+    cache.put(k, String(m + 1), 600);
+  }
+}
+// Registro de Novi: lo que escribió el dueño y si Novi lo entendió (para mejorar el diccionario).
+function noviLog_(r) {
+  const sh = hoja_("Novi_Log");
+  if (!sh) return {ok: true};
+  if (sh.getLastRow() > 5000) sh.deleteRows(2, 1000);
+  agregar_("Novi_Log", {fecha: new Date().toISOString(), texto: txt_(r.texto, 200), intencion: txt_(r.intencion, 40), entendio: r.entendio ? "SI" : "NO"});
+  return {ok: true};
 }
 function conLock_(fn) {
   const lock = LockService.getScriptLock();
@@ -579,14 +636,15 @@ const ANCHOS = {
   Agenda: {id: 50, nombre: 220, telefono: 120, direccion: 260, notas: 260, fecha: 150},
   Gastos: {id: 120, fecha: 100, categoria: 150, descripcion: 300, monto: 90},
   Cierres: {fecha: 100, ventas: 90, gastos: 90, efectivo_esperado: 130, efectivo_contado: 130, diferencia: 90, notas: 280},
-  Config: {clave: 120, valor: 520}
+  Config: {clave: 120, valor: 520},
+  Novi_Log: {fecha: 170, texto: 360, intencion: 130, entendio: 80}
 };
 const CATEGORIAS_GASTO = ["Mercadería", "Delivery / envíos", "Publicidad", "Local / servicios", "Sueldos", "Otros"];
 
 function embellecer_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const colores = {Productos: "#00a5d6", Pedidos: "#e58e00", Gastos: "#d93a3a", Cierres: "#13a05a", Config: "#5b6575", Clientes: "#00a5d6", Agenda: "#00a5d6"};
-  const usdCols = {Productos: ["costo", "precio", "bcv", "mayor"], Pedidos: ["total", "ganancia"], Clientes: [], Agenda: [], Gastos: ["monto"], Cierres: ["ventas", "gastos", "efectivo_esperado", "efectivo_contado", "diferencia"], Config: []};
+  const colores = {Productos: "#00a5d6", Pedidos: "#e58e00", Gastos: "#d93a3a", Cierres: "#13a05a", Config: "#5b6575", Clientes: "#00a5d6", Agenda: "#00a5d6", Novi_Log: "#1f6feb"};
+  const usdCols = {Productos: ["costo", "precio", "bcv", "mayor"], Pedidos: ["total", "ganancia"], Clientes: [], Agenda: [], Gastos: ["monto"], Cierres: ["ventas", "gastos", "efectivo_esperado", "efectivo_contado", "diferencia"], Config: [], Novi_Log: []};
   const recortar = ["imagenes", "descripcion", "especificaciones", "items", "direccion", "notas", "valor", "nota_url"];
   Object.keys(HOJAS).forEach(function (n) {
     const sh = ss.getSheetByName(n), cols = HOJAS[n], nc = cols.length, filas = sh.getMaxRows();
@@ -623,7 +681,7 @@ function embellecer_() {
   ]);
   const er = ped.getRange(2, col("Pedidos", "estado"), ped.getMaxRows() - 1, 1);
   const est = function (t, bg, fg) { return SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo(t).setBackground(bg).setFontColor(fg).setRanges([er]).build(); };
-  ped.setConditionalFormatRules([est("Pendiente", "#fff1d6", "#9a5b00"), est("Pagado", "#dbe4ff", "#1d3fd8"), est("Entregado", "#d6f5e3", "#0b7a43"), est("Cancelado", "#e5e7eb", "#5b6575")]);
+  ped.setConditionalFormatRules([est("Pendiente", "#fff1d6", "#9a5b00"), est("Crédito", "#ede5fe", "#5b2bc4"), est("Pagado", "#dbe4ff", "#1d3fd8"), est("Entregado", "#d6f5e3", "#0b7a43"), est("Cancelado", "#e5e7eb", "#5b6575")]);
 }
 
 /* ================= HOJA RESUMEN ================= */
