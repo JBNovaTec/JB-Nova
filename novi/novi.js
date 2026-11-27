@@ -388,7 +388,17 @@ if (DEMO) {
   local = function(b){
     if (b.action === "novi_log") return {ok:true};
     if (b.action === "tasa_set") { dload(); const v = Number(b.tasa); if (!(v > 0)) throw new Error("Tasa inválida"); D.config.tasa = v; dsave(); return Object.assign(snap(), {novi:NOVI_DEMO}); }
-    if (b.action === "tasa_bcv") { dload(); const base = Number(D.config.tasa) || 1; if (!D.config.tasa_bcv || D.config.tasa_bcv_fecha !== hoyKey()) { D.config.tasa_bcv = Math.round(base * 1.0125 * 100) / 100; D.config.tasa_bcv_eur = Math.round(base * 1.0125 * 1.16 * 100) / 100; D.config.tasa_bcv_fecha = hoyKey(); dsave(); } return Object.assign(snap(), {novi:NOVI_DEMO}); }
+    if (b.action === "tasa_bcv") {   // la demo también lee la tasa real; si no hay conexión, usa una de ejemplo
+      const fin = () => Object.assign(snap(), {novi:NOVI_DEMO});
+      return fetch("https://bcv.today/api/v1/rate.json", {cache:"no-store"}).then(r => r.json()).then(j => {
+        const v = Number(j.USD), f = String(j.effective_date || j.date || "").slice(0, 10);
+        if (!(v > 0) || !/^\d{4}-\d{2}-\d{2}$/.test(f)) throw 0;
+        dload(); D.config.tasa_bcv = r2(v); D.config.tasa_bcv_eur = r2(Number(j.EUR) || 0); D.config.tasa_bcv_fecha = f; dsave(); return fin();
+      }).catch(() => {
+        dload(); if (!D.config.tasa_bcv) { const base = Number(D.config.tasa) || 1; D.config.tasa_bcv = r2(base * 1.0125); D.config.tasa_bcv_eur = r2(base * 1.0125 * 1.16); D.config.tasa_bcv_fecha = hoyKey(); dsave(); }
+        return fin();
+      });
+    }
     const r = _local(b);
     if (b.action === "load" && r) r.novi = NOVI_DEMO;
     return r;
